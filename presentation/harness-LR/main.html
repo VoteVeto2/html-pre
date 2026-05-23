@@ -6,10 +6,10 @@
 <title>Agent Harness Engineering — A Survey</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="../html-ppt-skill/assets/fonts.css">
-<link rel="stylesheet" href="../html-ppt-skill/assets/base.css">
-<link rel="stylesheet" id="theme-link" href="./anthropic.css">
-<link rel="stylesheet" href="../html-ppt-skill/assets/animations/animations.css">
+<link rel="stylesheet" href="../../html-ppt-skill/assets/fonts.css">
+<link rel="stylesheet" href="../../html-ppt-skill/assets/base.css">
+<link rel="stylesheet" id="theme-link" href="../anthropic.css">
+<link rel="stylesheet" href="../../html-ppt-skill/assets/animations/animations.css">
 <style>
   /* Local structural overrides only — colors flow through CSS variables in anthropic.css */
   .slide{padding:88px 112px}
@@ -162,7 +162,7 @@
     <h2 class="h2">From <em style="font-style:italic">prompt</em> to <em style="font-style:italic">context</em> to <em style="font-style:italic;color:var(--accent)">harness</em> engineering.</h2>
 
     <figure class="hero-figure">
-      <img src="./assets/img/fig-three-phases.png" alt="Three engineering phases — Prompt Engineering (2022–2024), Context Engineering (2025), Harness Engineering (2026) — each subsumes the previous">
+      <img src="../assets/img/fig-three-phases.png" alt="Three engineering phases — Prompt Engineering (2022–2024), Context Engineering (2025), Harness Engineering (2026) — each subsumes the previous">
       <figcaption><span class="cap-num">Fig 1</span> Each phase subsumes the previous; they overlap rather than replace. The unit of optimization shifts outward — from a single text input, to a rolling information state, to the entire control system around the model.</figcaption>
     </figure>
 
@@ -182,7 +182,7 @@
     <h2 class="h2">Seven layers, <em>one harness</em>.</h2>
 
     <figure class="hero-figure">
-      <img src="./assets/img/fig-etclovg-taxonomy.png" alt="ETCLOVG seven-layer architecture — Execution, Tools, Context, Lifecycle on row 2; Observability above; Verification and Governance as bracketing bands">
+      <img src="../assets/img/fig-etclovg-taxonomy.png" alt="ETCLOVG seven-layer architecture — Execution, Tools, Context, Lifecycle on row 2; Observability above; Verification and Governance as bracketing bands">
       <figcaption><span class="cap-num">Fig 2</span> ETCLOVG extends prior six-component frameworks by promoting Observability and Governance to first-class layers — each has distinct tooling and team ownership in production.</figcaption>
     </figure>
 
@@ -253,7 +253,7 @@
         </ol>
       </div>
       <figure class="fig-side">
-        <img src="./assets/img/fig-tool-interface-tree.png" alt="Tool-interface tree — protocol standards, description / discovery, training / integration, scalability">
+        <img src="../assets/img/fig-tool-interface-tree.png" alt="Tool-interface tree — protocol standards, description / discovery, training / integration, scalability">
         <figcaption><span class="cap-num">Fig 3</span> Four tool-interface subcategories — protocol standards, description &amp; discovery, training / integration, scalability.</figcaption>
       </figure>
     </div>
@@ -296,7 +296,7 @@
     <h2 class="h2">From single loop to <em>issue-to-pull-request pipeline</em>.</h2>
 
     <figure class="hero-figure">
-      <img src="./assets/img/fig-lifecycle-orchestration-tree.png" alt="Three orchestration patterns — single-agent loop, multi-agent composition (hierarchical/team/workflow/fan-out/graph), full lifecycle pipeline">
+      <img src="../assets/img/fig-lifecycle-orchestration-tree.png" alt="Three orchestration patterns — single-agent loop, multi-agent composition (hierarchical/team/workflow/fan-out/graph), full lifecycle pipeline">
       <figcaption><span class="cap-num">Fig 4</span> Three orchestration patterns. The smallest stable unit is the ReAct-style single loop; multi-agent composition adds five patterns on top; the full lifecycle pipeline spans planning, code, test, review and merge.</figcaption>
     </figure>
 
@@ -347,7 +347,7 @@
     <h2 class="h2">A task-to-feedback <em>lifecycle</em>,<br>not a leaderboard score.</h2>
 
     <figure class="hero-figure">
-      <img src="./assets/img/fig-task-feedback-lifecycle.png" alt="Five-stage circular task-to-feedback lifecycle — ground, validate, execute, judge, feed back" style="max-height:560px">
+      <img src="../assets/img/fig-task-feedback-lifecycle.png" alt="Five-stage circular task-to-feedback lifecycle — ground, validate, execute, judge, feed back" style="max-height:560px">
       <figcaption><span class="cap-num">Fig 5</span> Five stages, one loop. Ground tasks in environments with success criteria; validate sandbox / tools / context / evaluator readiness; execute with rich trace capture; judge multi-level with failure attribution; convert outcomes into regression and deployment feedback.</figcaption>
     </figure>
 
@@ -494,6 +494,6 @@
 
 </div>
 <div class="progress-bar"><span></span></div>
-<script src="../html-ppt-skill/assets/runtime.js"></script>
+<script src="../../html-ppt-skill/assets/runtime.js"></script>
 </body>
 </html>

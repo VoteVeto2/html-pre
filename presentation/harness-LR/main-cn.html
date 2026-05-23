@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Agent harness 工程 —— 综述</title>
-<link rel="stylesheet" href="../html-ppt-skill/assets/fonts.css">
-<link rel="stylesheet" href="../html-ppt-skill/assets/base.css">
-<link rel="stylesheet" id="theme-link" href="./anthropic.css">
-<link rel="stylesheet" href="../html-ppt-skill/assets/animations/animations.css">
+<link rel="stylesheet" href="../../html-ppt-skill/assets/fonts.css">
+<link rel="stylesheet" href="../../html-ppt-skill/assets/base.css">
+<link rel="stylesheet" id="theme-link" href="../anthropic.css">
+<link rel="stylesheet" href="../../html-ppt-skill/assets/animations/animations.css">
 <style>
   /* --- CJK font overrides for the Chinese deck --- */
   :root{
@@ -196,7 +196,7 @@
     <h2 class="h2">从 <em>prompt</em> 到 <em>context</em>，<br>再到 <em style="color:var(--accent)">harness</em> 工程。</h2>
 
     <figure class="hero-figure">
-      <img src="./assets/img/fig-three-phases.png" alt="工程的三个阶段 —— Prompt Engineering（2022–2024）、Context Engineering（2025）、Harness Engineering（2026），每一阶段都包含前一阶段">
+      <img src="../assets/img/fig-three-phases.png" alt="工程的三个阶段 —— Prompt Engineering（2022–2024）、Context Engineering（2025）、Harness Engineering（2026），每一阶段都包含前一阶段">
       <figcaption><span class="cap-num">图 1</span> 每一阶段都包含前一阶段；它们彼此重叠而非互相取代。优化的单位持续向外迁移 —— 从单一文本输入，到滚动的信息状态，再到模型外围的整个控制系统。</figcaption>
     </figure>
 
@@ -216,7 +216,7 @@
     <h2 class="h2">七个层次，<em>一个 harness</em>。</h2>
 
     <figure class="hero-figure">
-      <img src="./assets/img/fig-etclovg-taxonomy.png" alt="ETCLOVG 七层架构 —— 第二行的 Execution、Tools、Context、Lifecycle；上方的 Observability；以及作为上下两条边带的 Verification 与 Governance">
+      <img src="../assets/img/fig-etclovg-taxonomy.png" alt="ETCLOVG 七层架构 —— 第二行的 Execution、Tools、Context、Lifecycle；上方的 Observability；以及作为上下两条边带的 Verification 与 Governance">
       <figcaption><span class="cap-num">图 2</span> ETCLOVG 扩展了此前的六组件框架，将可观测性（Observability）与治理（Governance）提升为一等公民 —— 二者在生产中都有独立的工具栈与团队归属。</figcaption>
     </figure>
 
@@ -287,7 +287,7 @@
         </ol>
       </div>
       <figure class="fig-side">
-        <img src="./assets/img/fig-tool-interface-tree.png" alt="工具接口的四个子类树 —— 协议标准、描述与发现、训练与集成、可扩展性">
+        <img src="../assets/img/fig-tool-interface-tree.png" alt="工具接口的四个子类树 —— 协议标准、描述与发现、训练与集成、可扩展性">
         <figcaption><span class="cap-num">图 3</span> 工具接口的四个子类 —— 协议标准、描述与发现、训练与集成、可扩展性。</figcaption>
       </figure>
     </div>
@@ -330,7 +330,7 @@
     <h2 class="h2">从单回路到 <em>issue-到-PR</em> 的<br>完整流水线。</h2>
 
     <figure class="hero-figure">
-      <img src="./assets/img/fig-lifecycle-orchestration-tree.png" alt="三种编排模式 —— 单智能体回路、多智能体组合（分层 / 团队 / 工作流 / 扇出 / 图）、完整生命周期流水线">
+      <img src="../assets/img/fig-lifecycle-orchestration-tree.png" alt="三种编排模式 —— 单智能体回路、多智能体组合（分层 / 团队 / 工作流 / 扇出 / 图）、完整生命周期流水线">
       <figcaption><span class="cap-num">图 4</span> 三种编排模式。最小稳定单元是 ReAct 式的单回路；多智能体组合在其上加入五种模式；完整生命周期流水线则跨越规划、编码、测试、评审与合并。</figcaption>
     </figure>
 
@@ -381,7 +381,7 @@
     <h2 class="h2">任务到反馈的<em>生命周期</em>，<br>而非排行榜上的一个分数。</h2>
 
     <figure class="hero-figure">
-      <img src="./assets/img/fig-task-feedback-lifecycle.png" alt="五阶段循环的任务—反馈生命周期 —— 锚定、验证、执行、判断、反馈" style="max-height:560px">
+      <img src="../assets/img/fig-task-feedback-lifecycle.png" alt="五阶段循环的任务—反馈生命周期 —— 锚定、验证、执行、判断、反馈" style="max-height:560px">
       <figcaption><span class="cap-num">图 5</span> 五个阶段，一个闭环。将任务锚定在具备成功判据的环境中；验证沙箱、工具、上下文与评估器的就绪状态；以丰富的轨迹采集执行；进行多级判断并归因失败；将结果转化为回归与部署的反馈信号。</figcaption>
     </figure>
 
@@ -528,6 +528,6 @@
 
 </div>
 <div class="progress-bar"><span></span></div>
-<script src="../html-ppt-skill/assets/runtime.js"></script>
+<script src="../../html-ppt-skill/assets/runtime.js"></script>
 </body>
 </html>

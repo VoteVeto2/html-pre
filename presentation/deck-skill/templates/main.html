@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<!--
+  BOILERPLATE DECK
+  Copy this to <project>/presentation/main.html, then customize.
+  Assumes sibling folder <project>/html-ppt-skill/ (run scripts/new-deck.sh).
+  Five demo slides illustrating the core patterns: drop cap, hanging-list,
+  hero figure, big stat, full-bleed quote. Extend by rotating patterns from
+  ../deck-skill/reference/patterns.md
+-->
+<html lang="en" data-theme="anthropic">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{Deck title}}</title>
+<link rel="stylesheet" href="../../html-ppt-skill/assets/fonts.css">
+<link rel="stylesheet" href="../../html-ppt-skill/assets/base.css">
+<link rel="stylesheet" id="theme-link" href="../anthropic.css">
+<link rel="stylesheet" href="../../html-ppt-skill/assets/animations/animations.css">
+<style>
+  /* Local structural overrides only — colors flow through CSS variables in anthropic.css */
+  .slide{padding:88px 112px}
+  .slide.tinted{background:var(--bg-soft)}
+  .slide.bleed{padding:0}
+
+  /* Cover */
+  .cover-wrap{display:flex;flex-direction:column;justify-content:center;height:100%;max-width:1180px}
+  .cover-h1{font-family:var(--font-display);font-weight:600;font-size:clamp(72px,8vw,128px);line-height:.96;letter-spacing:-.025em;color:var(--text-1);margin:0 0 36px;text-wrap:balance}
+  .cover-h1 em{font-style:italic;color:var(--accent);font-weight:600}
+  .cover-thinrule{width:88px;height:1px;background:var(--accent);margin:8px 0 30px}
+  .cover-meta{margin-top:48px;display:grid;gap:12px;max-width:780px}
+  .slide.cover .deck-footer{justify-content:flex-end}
+
+  /* Hero figure */
+  .hero-figure{display:flex;flex-direction:column;align-items:center;margin-top:8px}
+  .hero-figure img{max-width:84%;max-height:620px;height:auto;width:auto;border:1px solid var(--border);border-radius:6px;background:var(--surface)}
+  .hero-figure figcaption{font-family:var(--font-ui);font-size:12px;line-height:1.5;color:var(--text-3);margin-top:16px;max-width:72ch;text-align:center;letter-spacing:.02em}
+  .hero-figure figcaption .cap-num{font-weight:700;color:var(--accent);letter-spacing:.12em;text-transform:uppercase;margin-right:8px;font-size:11px}
+
+  /* Run-in stack */
+  .run-stack{display:grid;gap:14px;margin-top:24px;max-width:760px}
+</style>
+</head>
+<body data-themes="anthropic" data-theme-base="./">
+<div class="deck">
+
+  <!-- ============ 1. COVER (drop cap pattern) ============ -->
+  <section class="slide cover" data-title="Cover">
+    <div class="deck-header">
+      <span class="eyebrow">{{Series · Year}}</span>
+      <span class="eyebrow">{{Short title}}</span>
+    </div>
+
+    <div class="cover-wrap">
+      <p class="kicker">{{Topic · Subtopic}}</p>
+      <h1 class="cover-h1">{{Main title}}<br><em>{{accented subtitle}}</em></h1>
+      <span class="cover-thinrule"></span>
+      <p class="dropcap-para">
+        <span class="dropcap">T</span>he opening sentence of the deck — your one-line thesis dressed up as an essay opener. Keep it under 40 words; the drop cap does the visual work, the prose does the framing.
+      </p>
+
+      <div class="cover-meta">
+        <p class="middot-list"><span>Author 1</span><span>Author 2</span><span>Author 3</span><span>et al.</span></p>
+        <p class="middot-list dim2"><span>Institution</span><span>Institution</span><span>Institution</span></p>
+      </div>
+    </div>
+
+    <div class="deck-footer">
+      <span class="slide-number" data-current="1" data-total="5"></span>
+    </div>
+    <div class="notes">Speaker notes — visible via N drawer or S presenter view; hidden from audience. Use these for the things you'll say out loud that aren't on the slide.</div>
+  </section>
+
+  <!-- ============ 2. HANGING-LIST (numbered claims) ============ -->
+  <section class="slide" data-title="Three claims">
+    <p class="kicker">Thesis · 01</p>
+    <h2 class="h2">A single-line claim<br>that sets up the three points.</h2>
+    <p class="lede">A one-line lede explaining the framing for the list below.</p>
+
+    <ol class="hanging-list">
+      <li>
+        <span class="n">01</span>
+        <div>
+          <h4>First claim with an inline <em style="color:var(--accent);font-style:normal;font-weight:700">number</em> or accent</h4>
+          <p>Supporting evidence in one sentence. Keep it concrete.</p>
+        </div>
+      </li>
+      <li>
+        <span class="n">02</span>
+        <div>
+          <h4>Second claim, same shape</h4>
+          <p>Supporting evidence. Vary sentence length so the list doesn't feel mechanical.</p>
+        </div>
+      </li>
+      <li>
+        <span class="n">03</span>
+        <div>
+          <h4>Third claim, payoff</h4>
+          <p>The one that makes the synthesis land.</p>
+        </div>
+      </li>
+    </ol>
+
+    <p class="run-in" style="margin-top:32px"><span class="run-in-head">In a sentence —</span> the one-line synthesis that ties the three claims together.</p>
+
+    <div class="deck-footer">
+      <span>{{Short deck title}} · Section</span>
+      <span class="slide-number" data-current="2" data-total="5"></span>
+    </div>
+    <div class="notes">What to say out loud about the three-claim structure. Why this order, what's the strongest of the three, where the audience usually pushes back.</div>
+  </section>
+
+  <!-- ============ 3. HERO FIGURE (paper diagram) ============ -->
+  <section class="slide tinted" data-title="Hero figure">
+    <div class="section-rule">
+      <span class="lbl">Part Two — {{Section name}}</span>
+      <span class="line"></span>
+    </div>
+    <h2 class="h2">The figure-led slide:<br><em>one diagram</em> carrying the argument.</h2>
+
+    <figure class="hero-figure">
+      <img src="../assets/img/{{figure-name}}.png" alt="Descriptive alt text — what the figure depicts">
+      <figcaption><span class="cap-num">Fig 1</span> Caption text — what the figure shows plus one observation about it that the audience would miss.</figcaption>
+    </figure>
+
+    <div class="deck-footer">
+      <span>{{Section}} · Figure</span>
+      <span class="slide-number" data-current="3" data-total="5"></span>
+    </div>
+    <div class="notes">The figure should be from the source PDF (extracted via scripts/extract-figures.sh). Caption explains; speaker notes give the deeper backstory.</div>
+  </section>
+
+  <!-- ============ 4. BIG STAT (single number) ============ -->
+  <section class="slide" data-title="Big stat">
+    <p class="kicker">Evidence · 01</p>
+    <h2 class="h2">A claim a <em>big number</em> can defend.</h2>
+
+    <div class="bignum" style="margin-top:32px">
+      <div class="bignum-val">84<span class="bignum-unit">%</span></div>
+      <p class="bignum-cap">
+        Caption explaining what the number means in plain English.
+        <span class="src">Source · Year</span>
+      </p>
+    </div>
+
+    <div class="run-stack" style="max-width:none">
+      <p class="run-in"><span class="run-in-head">Why it matters.</span> The first sub-point — keep it under 22 words.</p>
+      <p class="run-in"><span class="run-in-head">What it doesn't show.</span> The honest caveat — keep it under 22 words.</p>
+      <p class="run-in"><span class="run-in-head">What to do.</span> The action the number motivates.</p>
+    </div>
+
+    <div class="deck-footer">
+      <span>{{Section}} · Evidence</span>
+      <span class="slide-number" data-current="4" data-total="5"></span>
+    </div>
+    <div class="notes">For three small stats inline, swap .bignum for .statrow (see reference/patterns.md §7).</div>
+  </section>
+
+  <!-- ============ 5. FULL-BLEED QUOTE ============ -->
+  <section class="slide bleed" data-title="Key quote">
+    <div class="layout-quote" style="height:100%;padding-left:120px">
+      <blockquote class="bigquote">
+        <span class="open-quote">&ldquo;</span>The memorable line from the source. Italic Newsreader-style serif, no card, no border. <em>One word</em> accented.
+      </blockquote>
+      <p class="quote-source"><span class="rule"></span>{{Author}} &middot; {{Source}} &middot; {{Year}}</p>
+    </div>
+    <div class="deck-footer" style="padding:0 96px">
+      <span>Key Quote</span>
+      <span class="slide-number" data-current="5" data-total="5"></span>
+    </div>
+    <div class="notes">Use sparingly — at most one full-bleed quote per deck. Picks up its weight from how empty the rest of the canvas is.</div>
+  </section>
+
+</div>
+<div class="progress-bar"><span></span></div>
+<script src="../../html-ppt-skill/assets/runtime.js"></script>
+</body>
+</html>

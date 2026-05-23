@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="anthropic">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Harness Design for Long-Running Agents — Anthropic Engineering</title>
+<link rel="stylesheet" href="../../html-ppt-skill/assets/fonts.css">
+<link rel="stylesheet" href="../../html-ppt-skill/assets/base.css">
+<link rel="stylesheet" id="theme-link" href="../anthropic.css">
+<link rel="stylesheet" href="../../html-ppt-skill/assets/animations/animations.css">
+<style>
+  .slide{padding:88px 112px}
+  .slide.tinted{background:var(--bg-soft)}
+  .slide.bleed{padding:0}
+
+  /* Cover */
+  .cover-wrap{display:flex;flex-direction:column;justify-content:center;height:100%;max-width:1180px}
+  .cover-h1{font-family:var(--font-display);font-weight:600;font-size:clamp(72px,8vw,128px);line-height:.96;letter-spacing:-.025em;color:var(--text-1);margin:0 0 36px;text-wrap:balance}
+  .cover-h1 em{font-style:italic;color:var(--accent);font-weight:600}
+  .cover-thinrule{width:88px;height:1px;background:var(--accent);margin:8px 0 30px}
+  .cover-meta{margin-top:48px;display:grid;gap:12px;max-width:780px}
+  .slide.cover .deck-footer{justify-content:flex-end}
+
+  .run-stack{display:grid;gap:14px;margin-top:24px;max-width:880px}
+
+  /* Section mark used on the layer/section pages */
+  .layer-mark{display:inline-flex;align-items:baseline;gap:14px;margin:0 0 14px}
+  .layer-mark .L{font-family:var(--font-display);font-weight:600;font-size:64px;line-height:1;color:var(--accent);letter-spacing:-.04em}
+  .layer-mark .name{font-family:var(--font-ui);font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--text-3);align-self:center;padding-bottom:6px}
+
+  /* In-text emphasis class for coined terms */
+  .coined{color:var(--accent);font-style:italic;font-weight:500}
+
+  /* Compact dict for slide 13 (Brain/Hands/Session) */
+  .dict.compact .entry{padding:14px 0}
+  .dict.compact dt{font-size:20px}
+  .dict.compact dd{font-size:15px}
+
+  /* Compact hanging-list for tall slides (Antipatterns, Takeaways)
+     fits 5–6 items on smaller laptop viewports without overflow */
+  .hanging-list.compact li{padding:14px 0}
+  .hanging-list.compact h4{font-size:20px}
+  .hanging-list.compact p{font-size:15px}
+</style>
+</head>
+<body data-themes="anthropic" data-theme-base="../">
+<div class="deck">
+
+  <!-- ============ 1. COVER ============ -->
+  <section class="slide cover" data-title="Cover">
+    <div class="deck-header">
+      <span class="eyebrow">Anthropic Engineering · Reading Notes</span>
+      <span class="eyebrow">Companion to the Survey Deck</span>
+    </div>
+
+    <div class="cover-wrap">
+      <p class="kicker">Practitioner View · Three Posts, One Playbook</p>
+      <h1 class="cover-h1">Harness Design<br><em>for Long-Running Agents</em></h1>
+      <span class="cover-thinrule"></span>
+      <p class="dropcap-para">
+        <span class="dropcap">L</span>ong-running agents fail in predictable ways &mdash; <em class="coined">context anxiety</em>, self-flattery, opaque handoffs. Anthropic's production answer is an opinionated harness of separated roles, structured artifacts, and decoupled infrastructure &mdash; one you <em>shrink</em> as the model grows.
+      </p>
+
+      <div class="cover-meta">
+        <p class="middot-list"><span>Effective Harnesses for Long-Running Agents</span><span>Harness Design for Long-Running Apps</span><span>Managed Agents</span></p>
+        <p class="middot-list dim2"><span>Anthropic Engineering</span><span>2026</span></p>
+      </div>
+    </div>
+
+    <div class="deck-footer">
+      <span class="slide-number" data-current="1" data-total="16"></span>
+    </div>
+    <div class="notes">This deck is the companion to the academic survey deck — same topic, but from the people shipping it. Everything here is drawn from Anthropic's own engineering blog and reflects what they actually do in production, not what the literature recommends.</div>
+  </section>
+
+  <!-- ============ 2. THE SHIFT ============ -->
+  <section class="slide" data-title="The Shift">
+    <p class="kicker">The Shift · From Turns to Hours</p>
+    <h2 class="h2">Agents now run for hours,<br><em>not turns</em>.</h2>
+
+    <div class="bignum" style="margin-top:32px">
+      <div class="bignum-val">3<span class="bignum-unit">h&nbsp;50m</span></div>
+      <p class="bignum-cap">
+        for a working DAW; six hours for a game maker &mdash; both built by Claude in one continuous run.
+        <span class="src">Anthropic Engineering · 2026</span>
+      </p>
+    </div>
+
+    <div class="run-stack" style="max-width:none">
+      <p class="run-in"><span class="run-in-head">Unit of work changed.</span> Single-turn chat &rarr; multi-hour, multi-session execution. The old harness was tuned for the wrong unit.</p>
+      <p class="run-in"><span class="run-in-head">Cold starts everywhere.</span> &ldquo;Each new session begins with no memory of what came before.&rdquo;</p>
+      <p class="run-in"><span class="run-in-head">New failure modes</span> that the old harness never had to handle &mdash; this deck is mostly about those.</p>
+    </div>
+
+    <div class="deck-footer">
+      <span>Harness Design · The Shift</span>
+      <span class="slide-number" data-current="2" data-total="16"></span>
+    </div>
+    <div class="notes">The unit of work has changed. We are no longer optimizing for a clean single response — we are designing for agents that wake up in an unfamiliar repo, finish a feature, and hand off to a future version of themselves. That shift is what makes harness design suddenly load-bearing.</div>
+  </section>
+
+  <!-- ============ 3. WHAT "HARNESS" MEANS ============ -->
+  <section class="slide" data-title="What 'Harness' Means">
+    <p class="kicker">Definition · Anthropic's Working Mental Model</p>
+    <h2 class="h2">The harness is <em>everything</em><br>around the model.</h2>
+
+    <dl class="dict" style="margin-top:24px">
+      <div class="entry">
+        <div class="letter">i</div>
+        <div class="body">
+          <dt>Components <span class="pos">· what's in the box</span></dt>
+          <dd>Prompts, tools, sandbox, session log, evaluator agents, planners, schedulers, retries &mdash; everything outside the weights.</dd>
+        </div>
+      </div>
+      <div class="entry">
+        <div class="letter">ii</div>
+        <div class="body">
+          <dt>Purpose <span class="pos">· each piece is a bet</span></dt>
+          <dd>Every component encodes an assumption about what the model can't do alone. When the assumption expires, the component becomes <em>dead weight</em>.</dd>
+        </div>
+      </div>
+      <div class="entry">
+        <div class="letter">iii</div>
+        <div class="body">
+          <dt>Reference implementation <span class="pos">· Claude Agent SDK</span></dt>
+          <dd>Anthropic ships a general-purpose harness so you don't reinvent the wheel for the common cases.</dd>
+        </div>
+      </div>
+    </dl>
+
+    <div class="deck-footer">
+      <span>Harness Design · Definition</span>
+      <span class="slide-number" data-current="3" data-total="16"></span>
+    </div>
+    <div class="notes">Anthropic doesn't give a formal definition — they treat the harness as the working scaffolding around the model. The key mental model is that each piece of scaffolding is a bet about a model limitation. When the bet expires, the scaffolding becomes dead weight.</div>
+  </section>
+
+  <!-- ============ 4. WHY LONG-RUNNING IS HARDER ============ -->
+  <section class="slide" data-title="Why Long-Running Is Harder">
+    <p class="kicker">The Failure Modes · Five New Ways to Fail</p>
+    <h2 class="h2">New failure modes <em>that emerge with time</em>.</h2>
+
+    <ol class="hanging-list">
+      <li><span class="n">01</span><div><h4><span class="coined">Context anxiety</span></h4><p>Models wrap work up prematurely as the context fills toward its limit.</p></div></li>
+      <li><span class="n">02</span><div><h4>Premature victory</h4><p>The agent declares &ldquo;done&rdquo; after partial work &mdash; tests skipped, edge cases ignored.</p></div></li>
+      <li><span class="n">03</span><div><h4>Opaque handoffs</h4><p>The next session must guess what the previous one did, why, and where it stopped.</p></div></li>
+      <li><span class="n">04</span><div><h4>Self-flattery</h4><p>Agents grade their own mediocre output as excellent &mdash; the bar moves with the writer.</p></div></li>
+      <li><span class="n">05</span><div><h4>Inherited breakage</h4><p>Later sessions waste hours debugging bugs the earlier sessions silently introduced.</p></div></li>
+    </ol>
+
+    <div class="deck-footer">
+      <span>Harness Design · Failure Modes</span>
+      <span class="slide-number" data-current="4" data-total="16"></span>
+    </div>
+    <div class="notes">These are the five failure modes that show up once you stretch an agent past a single context window. Each one motivates a specific piece of the harness. If your agent doesn't run long, you don't need most of this.</div>
+  </section>
+
+  <!-- ============ 5. CONTEXT ANXIETY ============ -->
+  <section class="slide" data-title="Context Anxiety">
+    <p class="kicker">Failure Mode · 01 &middot; Context Anxiety</p>
+    <h2 class="h2">Models get <em>nervous</em><br>near their context limit.</h2>
+
+    <div class="layout-sidenote" style="margin-top:16px">
+      <div class="main-col">
+        <p>Claude Sonnet 4.5 starts wrapping work up prematurely as context fills. The instinct is to compact &mdash; summarize the conversation in place. <em>Compaction alone doesn't fix it</em>; the model still senses the long history and behaves accordingly.</p>
+        <p class="run-in"><span class="run-in-head">The fix:</span> a full <span class="coined">context reset</span> with a structured handoff &mdash; not a summary, but a fresh shift starting from artifacts the previous shift left behind.</p>
+        <p class="run-in"><span class="run-in-head">Counter-conventional:</span> reset beats compact for long sessions. The intuition is wrong because the model isn't responding to length &mdash; it's responding to <em>perceived</em> remaining capacity.</p>
+      </div>
+      <aside class="side-col">
+        <p class="side-note"><span class="side-marker">A</span>&ldquo;Context resets were essential to the harness design.&rdquo;</p>
+        <p class="side-note"><span class="side-marker">B</span>Compaction = summarize in place. Reset = end the session, hand off artifacts.</p>
+        <p class="side-note"><span class="side-marker">C</span>Anthropic cut cost 37% by replacing compaction with periodic resets &mdash; no quality drop.</p>
+      </aside>
+    </div>
+
+    <div class="deck-footer">
+      <span>Harness Design · Context</span>
+      <span class="slide-number" data-current="5" data-total="16"></span>
+    </div>
+    <div class="notes">This is one of the most counter-conventional findings. The instinct is to compact — summarize the conversation in place. Anthropic found that doesn't eliminate the anxiety, because the model still senses the long history. A full context reset with a structured handoff actually works better.</div>
+  </section>
+
+  <!-- ============ 6. STRUCTURED HANDOFFS ============ -->
+  <section class="slide" data-title="Structured Handoffs">
+    <p class="kicker">Pattern · 01 &middot; Handoff Beats Memory</p>
+    <h2 class="h2">Write the handoff a <em>new shift</em> would need.</h2>
+
+    <ol class="hanging-list">
+      <li><span class="n roman">i</span><div><h4><code style="font-family:var(--font-mono);font-size:.92em">init.sh</code> &mdash; so the agent doesn't relearn setup</h4><p>Bootstrap script per project. New shift runs it; ready in seconds, not minutes.</p></div></li>
+      <li><span class="n roman">ii</span><div><h4><code style="font-family:var(--font-mono);font-size:.92em">claude-progress.txt</code> &mdash; what was done, and why</h4><p>Append-only log. Forces the model to articulate decisions, which it can re-read.</p></div></li>
+      <li><span class="n roman">iii</span><div><h4>Git history with descriptive commits</h4><p>One commit per feature, written for the next agent to read &mdash; not for the next human.</p></div></li>
+      <li><span class="n roman">iv</span><div><h4>JSON feature list &mdash; 200+ entries, pass/fail</h4><p>JSON, not Markdown, because the model is less likely to &ldquo;tidy&rdquo; structured data.</p></div></li>
+      <li><span class="n roman">v</span><div><h4>One feature per session &mdash; never <em>one-shot the app</em></h4><p>The discipline that makes the rest of the artifacts useful.</p></div></li>
+    </ol>
+
+    <div class="deck-footer">
+      <span>Harness Design · Handoffs</span>
+      <span class="slide-number" data-current="6" data-total="16"></span>
+    </div>
+    <div class="notes">The inspiration here is human: what does a software engineer leave behind so the next shift can pick up cleanly? That metaphor drove the whole initializer-agent design for the claude.ai clone build. JSON, not Markdown, because the model is less likely to "tidy" structured data.</div>
+  </section>
+
+  <!-- ============ 7. GENERATOR / EVALUATOR / PLANNER ============ -->
+  <section class="slide tinted" data-title="Doer vs Judge">
+    <div class="section-rule">
+      <span class="lbl">Part Two — Anthropic's Three-Agent Pattern</span>
+      <span class="line"></span>
+    </div>
+    <h2 class="h2">Separate the doer<br><em>from the judge</em>.</h2>
+
+    <dl class="dict compact" style="margin-top:18px">
+      <div class="entry">
+        <div class="letter">G</div>
+        <div class="body">
+          <dt><span class="coined">Generator</span> <span class="pos">· writes the work</span></dt>
+          <dd>Writes the code, the design, the spec. Optimized for production, not judgment.</dd>
+        </div>
+      </div>
+      <div class="entry">
+        <div class="letter">E</div>
+        <div class="body">
+          <dt><span class="coined">Evaluator</span> <span class="pos">· holds the bar</span></dt>
+          <dd>Different agent, different prompt &mdash; grades the generator against concrete criteria. Adversarial by design.</dd>
+        </div>
+      </div>
+      <div class="entry">
+        <div class="letter">P</div>
+        <div class="body">
+          <dt><span class="coined">Planner</span> <span class="pos">· expands the brief</span></dt>
+          <dd>Turns a short user prompt into a full spec the generator and evaluator can act on.</dd>
+        </div>
+      </div>
+    </dl>
+
+    <p class="run-in" style="margin-top:24px;max-width:none"><span class="run-in-head">Why three, not one &mdash;</span> &ldquo;separating the agent doing the work from the agent judging it proves to be a strong lever.&rdquo; The architecture deliberately echoes generative adversarial networks; self-evaluation fails because the bar moves with the writer.</p>
+
+    <div class="deck-footer">
+      <span>Harness Design · Roles</span>
+      <span class="slide-number" data-current="7" data-total="16"></span>
+    </div>
+    <div class="notes">This is the central pattern of the primary post. Self-evaluation fails — models praise their own work. The fix is structural: a different agent, with different prompting, holds the bar. The architecture deliberately echoes generative adversarial networks.</div>
+  </section>
+
+  <!-- ============ 8. CONCRETE CRITERIA ============ -->
+  <section class="slide" data-title="Concrete Criteria">
+    <p class="kicker">Pattern · 02 &middot; Criteria Are a Steering Wheel</p>
+    <h2 class="h2">Concrete criteria, <em>not vibes</em>.</h2>
+    <p class="lede">Four grading axes for frontend quality &mdash; and a warning about how wording steers the generator before the evaluator ever runs.</p>
+
+    <ol class="hanging-list">
+      <li><span class="n">01</span><div><h4>Design quality</h4><p>Coherence, mood, identity &mdash; does the work feel like one thing made by one mind?</p></div></li>
+      <li><span class="n">02</span><div><h4>Originality</h4><p>Custom decisions vs template defaults &mdash; how much of the output is the model's own taste?</p></div></li>
+      <li><span class="n">03</span><div><h4>Craft</h4><p>Typography, spacing, color, contrast &mdash; the things a careful eye would notice on a second pass.</p></div></li>
+      <li><span class="n">04</span><div><h4>Functionality</h4><p>Does it actually work for the user &mdash; or just look like it would?</p></div></li>
+    </ol>
+
+    <p class="run-in" style="margin-top:24px"><span class="run-in-head">Wording warning &mdash;</span> phrasing like &ldquo;museum quality&rdquo; pulled designs toward visual convergence. Criteria shape output <em>before</em> evaluation; pick verbs and adjectives carefully.</p>
+
+    <div class="deck-footer">
+      <span>Harness Design · Criteria</span>
+      <span class="slide-number" data-current="8" data-total="16"></span>
+    </div>
+    <div class="notes">Subjective quality is the hardest thing to evaluate, so Anthropic forces it concrete. Phrasing like "museum quality" actually pulled designs toward visual convergence. Criteria are not neutral — they shape output even before the evaluator runs.</div>
+  </section>
+
+  <!-- ============ 9. SPRINT CONTRACTS ============ -->
+  <section class="slide" data-title="Sprint Contracts">
+    <p class="kicker">Pattern · 03 &middot; Agree Before You Build</p>
+    <h2 class="h2">Agree what <em>&ldquo;done&rdquo;</em> means<br>before you build.</h2>
+
+    <div class="layout-sidenote" style="margin-top:16px">
+      <div class="main-col">
+        <p class="run-in"><span class="run-in-head"><span class="coined">Sprint contract</span> &mdash;</span> the per-chunk agreement between generator and evaluator on what success looks like. Negotiated up front, not discovered mid-run.</p>
+        <p class="run-in"><span class="run-in-head">Concrete enough to verify</span> &mdash; one game-maker sprint had 27 explicit criteria. Loose enough not to over-engineer &mdash; the contract covers <em>this</em> chunk, not the whole project.</p>
+        <p class="run-in"><span class="run-in-head">The missing layer</span> between &ldquo;build me a DAW&rdquo; and a passing test. Without it, the evaluator and generator argue from different specs.</p>
+      </div>
+      <aside class="side-col">
+        <p class="side-note"><span class="side-marker">A</span>One sprint, one contract. Adjust the contract between sprints, not within them.</p>
+        <p class="side-note"><span class="side-marker">B</span>Over-specifying the whole project up front kills creative leaps &mdash; spec each chunk.</p>
+        <p class="side-note"><span class="side-marker">C</span>The contract is also a handoff artifact: future shifts know what &ldquo;done&rdquo; meant.</p>
+      </aside>
+    </div>
+
+    <div class="deck-footer">
+      <span>Harness Design · Sprint Contract</span>
+      <span class="slide-number" data-current="9" data-total="16"></span>
+    </div>
+    <div class="notes">A sprint contract is Anthropic's term for the per-chunk agreement between generator and evaluator on success conditions. It's the missing layer between "build me a DAW" and a passing test — concrete enough to verify, loose enough not to over-engineer.</div>
+  </section>
+
+  <!-- ============ 10. ITERATE, ITERATE ============ -->
+  <section class="slide" data-title="Iterate, Iterate">
+    <p class="kicker">Evidence · The Numbers</p>
+    <h2 class="h2">Real runs take <em>5&ndash;15 evaluator loops</em>.</h2>
+
+    <div class="statrow">
+      <div class="stat">
+        <div class="val">5&ndash;15</div>
+        <p class="lbl">Iterations</p>
+        <p>per generation, for frontend design work.</p>
+      </div>
+      <div class="stat">
+        <div class="val">$124.70</div>
+        <p class="lbl">DAW Build</p>
+        <p>3 rounds of build + QA &middot; 3h&nbsp;50m total.</p>
+      </div>
+      <div class="stat">
+        <div class="val">20<span class="u">&times;</span></div>
+        <p class="lbl">Cost Premium</p>
+        <p>Solo agent: $9 broken. Full harness: $200 working.</p>
+      </div>
+    </div>
+
+    <p class="run-in" style="margin-top:36px;max-width:none;border-top:1px solid var(--border);padding-top:24px"><span class="run-in-head">A museum-site sprint pivoted to 3D spatial design on iteration 10 &mdash;</span> the interesting creative leaps happened <em>mid-iteration</em>, not on the first try. A 20&times; cost premium bought a working product. That's the trade.</p>
+
+    <div class="deck-footer">
+      <span>Harness Design · Evidence</span>
+      <span class="slide-number" data-current="10" data-total="16"></span>
+    </div>
+    <div class="notes">The numbers matter. A solo agent gets you something cheap and broken. The full harness costs 20x more — and produces something you can actually ship. The interesting creative leaps often happened mid-iteration, not on the first try.</div>
+  </section>
+
+  <!-- ============ 11. ANTIPATTERNS ============ -->
+  <section class="slide" data-title="Antipatterns">
+    <p class="kicker">What Not To Do · Explicit Anthropic Warnings</p>
+    <h2 class="h2">Antipatterns Anthropic <em>calls out</em>.</h2>
+
+    <ol class="hanging-list compact">
+      <li><span class="n">01</span><div><h4>Self-evaluation without an external judge</h4><p>The bar moves with the writer. Always pair generator with a separate evaluator.</p></div></li>
+      <li><span class="n">02</span><div><h4>Over-specifying implementation up front</h4><p>Kills creative leaps. Specify each chunk via a sprint contract, not the whole project.</p></div></li>
+      <li><span class="n">03</span><div><h4>Compaction alone for context management</h4><p>Doesn't fix context anxiety. Use full resets with structured handoffs.</p></div></li>
+      <li><span class="n">04</span><div><h4>Generic prompts for design work &mdash; output goes bland</h4><p>&ldquo;Museum quality&rdquo; converges; pick words that diverge.</p></div></li>
+      <li><span class="n">05</span><div><h4>&ldquo;<em>It is unacceptable</em> to remove or edit tests because this could lead to missing or buggy functionality.&rdquo;</h4><p>The strongest single line in either post. Make sure the audience hears that one.</p></div></li>
+    </ol>
+
+    <div class="deck-footer">
+      <span>Harness Design · Antipatterns</span>
+      <span class="slide-number" data-current="11" data-total="16"></span>
+    </div>
+    <div class="notes">These are the explicit warnings across both engineering posts. The strongest language: "It is unacceptable to remove or edit tests because this could lead to missing or buggy functionality." Make sure the audience hears that one.</div>
+  </section>
+
+  <!-- ============ 12. ASSUMPTIONS AGE FAST ============ -->
+  <section class="slide" data-title="Assumptions Age Fast">
+    <p class="kicker">Discipline · Harness Assumptions Have a Shelf Life</p>
+    <h2 class="h2">Every harness component<br>has a <em>shelf life</em>.</h2>
+
+    <div class="bignum" style="margin-top:24px">
+      <div class="bignum-val">&minus;37<span class="bignum-unit">%</span></div>
+      <p class="bignum-cap">
+        cost drop when Anthropic upgraded to Opus 4.6 and removed scaffolding &mdash; quality held flat.
+        <span class="src">Anthropic Engineering &middot; 2026</span>
+      </p>
+    </div>
+
+    <div class="run-stack" style="max-width:none">
+      <p class="run-in"><span class="run-in-head">What changed.</span> Opus 4.6 made sprint decomposition unnecessary. Per-sprint evaluation collapsed into a single end-of-run pass.</p>
+      <p class="run-in"><span class="run-in-head">The rule.</span> Each scaffold encodes an assumption about a model limitation. When the model crosses that limit, the scaffold becomes <span class="coined">dead weight</span> &mdash; sometimes actively harmful.</p>
+      <p class="run-in"><span class="run-in-head">The discipline.</span> &ldquo;Find the simplest solution possible, and only increase complexity when needed.&rdquo; Audit your harness against the <em>current</em> model.</p>
+    </div>
+
+    <div class="deck-footer">
+      <span>Harness Design · Simplify</span>
+      <span class="slide-number" data-current="12" data-total="16"></span>
+    </div>
+    <div class="notes">Every scaffold you build is a bet on a model limitation. When the model crosses that limit, the scaffold becomes overhead — sometimes actively harmful. Audit your harness against the current model, not the one you designed for.</div>
+  </section>
+
+  <!-- ============ 13. MANAGED AGENTS — DECOUPLE ============ -->
+  <section class="slide tinted" data-title="Managed Agents">
+    <div class="section-rule">
+      <span class="lbl">Part Three — Infrastructure · Managed Agents</span>
+      <span class="line"></span>
+    </div>
+    <h2 class="h2">Decouple <em>brain, hands, session</em>.</h2>
+
+    <dl class="dict compact" style="margin-top:18px">
+      <div class="entry">
+        <div class="letter">B</div>
+        <div class="body">
+          <dt><span class="coined">Brain</span> <span class="pos">· Claude and its harness</span></dt>
+          <dd>The reasoning loop. Stateless across sessions; resumes via <code style="font-family:var(--font-mono);font-size:.92em">wake(sessionId)</code>.</dd>
+        </div>
+      </div>
+      <div class="entry">
+        <div class="letter">H</div>
+        <div class="body">
+          <dt><span class="coined">Hands</span> <span class="pos">· sandboxes</span></dt>
+          <dd>Called via <code style="font-family:var(--font-mono);font-size:.92em">execute(name, input)</code>. Interchangeable; never holds credentials.</dd>
+        </div>
+      </div>
+      <div class="entry">
+        <div class="letter">S</div>
+        <div class="body">
+          <dt><span class="coined">Session</span> <span class="pos">· durable event log</span></dt>
+          <dd>Append-only, persisted outside the harness. <em>Not</em> Claude's context window.</dd>
+        </div>
+      </div>
+    </dl>
+
+    <p class="run-in" style="margin-top:18px;max-width:none"><span class="run-in-head">Why decouple &mdash;</span> each layer can fail, restart, or scale independently. Brain crashes &mdash; rehydrate from the session. Sandbox dies &mdash; spin up a new one. The session outlives everything.</p>
+
+    <div class="deck-footer">
+      <span>Managed Agents · Architecture</span>
+      <span class="slide-number" data-current="13" data-total="16"></span>
+    </div>
+    <div class="notes">The third post is the platform layer. Anthropic's managed-agents service is what you get when you take the harness lessons and turn them into hosted infrastructure. The decoupling means each piece can fail, restart, or scale independently.</div>
+  </section>
+
+  <!-- ============ 14. CATTLE, NOT PETS ============ -->
+  <section class="slide" data-title="Cattle, Not Pets">
+    <p class="kicker">Infrastructure · Sandboxes Are Interchangeable</p>
+    <h2 class="h2"><em>Cattle</em>, not pets.</h2>
+
+    <div class="statrow">
+      <div class="stat">
+        <div class="val">~60<span class="u">%</span></div>
+        <p class="lbl">TTFT p50</p>
+        <p>improvement in time-to-first-token at the median.</p>
+      </div>
+      <div class="stat">
+        <div class="val">&gt;90<span class="u">%</span></div>
+        <p class="lbl">TTFT p95</p>
+        <p>improvement at the tail &mdash; cold-start latency basically disappears.</p>
+      </div>
+      <div class="stat">
+        <div class="val">0</div>
+        <p class="lbl">Tokens In Sandbox</p>
+        <p>Credentials never reach the container; vault + proxy at the edge.</p>
+      </div>
+    </div>
+
+    <p class="run-in" style="margin-top:36px;max-width:none;border-top:1px solid var(--border);padding-top:24px"><span class="run-in-head">Resource-bundled auth &mdash;</span> the git token arrives at <code style="font-family:var(--font-mono);font-size:.92em">clone</code> time, not at container start. Many brains, many hands &mdash; composable at scale.</p>
+
+    <div class="deck-footer">
+      <span>Managed Agents · Sandboxes</span>
+      <span class="slide-number" data-current="14" data-total="16"></span>
+    </div>
+    <div class="notes">Classic infra metaphor applied to agents. Once the sandbox is just a tool call, you can pool them, replace them, and lock down credentials properly. The latency wins are real and the security model is meaningfully better than tokens-in-container.</div>
+  </section>
+
+  <!-- ============ 15. THE LINE WORTH QUOTING ============ -->
+  <section class="slide bleed" data-title="The Line">
+    <div class="layout-quote" style="height:100%;padding-left:120px">
+      <blockquote class="bigquote">
+        <span class="open-quote">&ldquo;</span>The space of interesting harness combinations <em>doesn't shrink</em> as models improve. Instead, it moves.
+      </blockquote>
+      <p class="quote-source"><span class="rule"></span>Anthropic Engineering &middot; Harness Design for Long-Running Apps &middot; 2026</p>
+    </div>
+    <div class="deck-footer" style="padding:0 96px">
+      <span>Key Quote</span>
+      <span class="slide-number" data-current="15" data-total="16"></span>
+    </div>
+    <div class="notes">This is the line to leave the audience with. Better models don't kill the harness — they relocate the work. The components you needed yesterday become dead weight; the ambitions you couldn't entertain become reachable. Harness design is a moving target, not a one-time build.</div>
+  </section>
+
+  <!-- ============ 16. TAKEAWAYS ============ -->
+  <section class="slide" data-title="Takeaways">
+    <p class="kicker">Takeaways · What to Take Back to Your Team</p>
+    <h2 class="h2">Six things to <em>act on Monday</em>.</h2>
+
+    <ol class="hanging-list compact">
+      <li><span class="n">01</span><div><h4>Design for context resets, not just compaction</h4><p>Reset beats summarize for long-running work. Ship the handoff, not the history.</p></div></li>
+      <li><span class="n">02</span><div><h4>Separate generator from evaluator &mdash; always</h4><p>Self-evaluation fails. Two different agents, two different prompts, one moving bar.</p></div></li>
+      <li><span class="n">03</span><div><h4>Make criteria concrete; wording is a steering wheel</h4><p>Pick verbs that diverge. &ldquo;Museum quality&rdquo; converges; better adjectives pull harder.</p></div></li>
+      <li><span class="n">04</span><div><h4>Hand off through artifacts a new shift could read</h4><p><code style="font-family:var(--font-mono);font-size:.92em">init.sh</code>, progress log, JSON feature list. Written for the next agent, not the next human.</p></div></li>
+      <li><span class="n">05</span><div><h4>Audit harness assumptions every model bump</h4><p>Dead weight is invisible until you measure cost. Strip what the new model no longer needs.</p></div></li>
+      <li><span class="n">06</span><div><h4>Decouple brain, hands, session when you scale</h4><p>Each layer fails, restarts, scales independently. The session is the system of record.</p></div></li>
+    </ol>
+
+    <p class="middot-list dim2" style="margin-top:36px;text-align:center"><span>Thanks</span><span>Three posts, one playbook</span><span>Read the originals at anthropic.com/engineering</span></p>
+
+    <div class="deck-footer">
+      <span>Harness Design · End</span>
+      <span class="slide-number" data-current="16" data-total="16"></span>
+    </div>
+    <div class="notes">Six things to act on Monday. The first four are project-level decisions any team can apply this week. The last two are architectural and matter more once you're running agents at scale or across many users.</div>
+  </section>
+
+</div>
+<div class="progress-bar"><span></span></div>
+<script src="../../html-ppt-skill/assets/runtime.js"></script>
+</body>
+</html>
