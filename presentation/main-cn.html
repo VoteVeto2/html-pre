@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Agent 框架工程 —— 综述</title>
+<title>Agent harness 工程 —— 综述</title>
 <link rel="stylesheet" href="../html-ppt-skill/assets/fonts.css">
 <link rel="stylesheet" href="../html-ppt-skill/assets/base.css">
 <link rel="stylesheet" id="theme-link" href="./anthropic.css">
@@ -89,10 +89,10 @@
 
     <div class="cover-wrap">
       <p class="kicker">综述 · 智能体工程</p>
-      <h1 class="cover-h1">Agent<br><em>框架工程</em></h1>
+      <h1 class="cover-h1">Agent <em>harness</em><br>工程</h1>
       <span class="cover-thinrule"></span>
       <p class="dropcap-para">
-        <span class="dropcap">在</span>真实部署中，决定 LLM 智能体可靠性的不是模型本身，而是其外围的<em style="font-style:italic;color:var(--accent)">框架</em>。七个层次、170+ 开源项目、一套分类法 —— 终于，为实践者早已熟知却无以名之的事物，赋予了语言。
+        <span class="dropcap">在</span>真实部署中，决定 LLM 智能体可靠性的不是模型本身，而是其外围的 <em style="font-style:italic;color:var(--accent)">harness</em>。七个层次、170+ 开源项目、一套分类法 —— 终于，为实践者早已熟知却无以名之的事物，赋予了语言。
       </p>
 
       <div class="cover-meta">
@@ -102,23 +102,41 @@
     </div>
 
     <div class="deck-footer">
-      <span class="slide-number" data-current="1" data-total="16"></span>
+      <span class="slide-number" data-current="1" data-total="17"></span>
     </div>
     <div class="notes">这份综述提出：包裹 LLM 的基础设施层，已经成为决定智能体可靠性的主导变量。它综合了来自 OpenAI、Anthropic、LangChain 等实践者的经验与学术研究，将 170+ 开源项目映射至一套新分类法。封面定下基调 —— 论文式，而非幻灯片式。</div>
   </section>
 
-  <!-- ============ 2. 关键约束 ============ -->
+    <!-- ============ 2. HARNESS 词源 ============ -->
+  <section class="slide" data-title="harness 词源">
+    <p class="kicker">插曲 · 一个词的渊源</p>
+    <h2 class="h2">为什么叫 <em>harness</em>？</h2>
+
+    <p class="dropcap-para" style="margin-top:32px">
+      <span class="dropcap">原</span>意为马具 —— 套在牲畜身上、用以控制并驱使的束带。在 agentic 时代，<em style="color:var(--accent)">harness</em> 演化为包裹 LLM 的全套脚手架：沙箱、工具、记忆、编排、可观测、验证、治理。
+    </p>
+
+    <p class="run-in" style="margin-top:24px"><span class="run-in-head">从控制马匹，到控制 LLM ——</span> 同一个词，同一个意图。</p>
+
+    <div class="deck-footer">
+      <span>插曲 · 词源</span>
+      <span class="slide-number" data-current="2" data-total="17"></span>
+    </div>
+    <div class="notes">harness 在英文里原指马具 —— 套在马匹身上、由人借以控制方向与力道的束带。在 agentic AI 时代，这个词被借用来指代包裹 LLM 的整套外围设施。同样是『一个能动者 + 一套控制装置』的结构。</div>
+  </section>
+
+  <!-- ============ 3. 关键约束 ============ -->
   <section class="slide" data-title="关键约束">
     <p class="kicker">论点 · 01</p>
     <h2 class="h2">仅靠更好的模型，<br>无法带来更可靠的智能体。</h2>
-    <p class="lede">2026 年初的三项独立实证结果。变量保持不变的是模型；改变的，是其外围的框架。</p>
+    <p class="lede">2026 年初的三项独立实证结果。变量保持不变的是模型；改变的，是其外围的 harness。</p>
 
     <ol class="hanging-list">
       <li>
         <span class="n">01</span>
         <div>
           <h4>仅修改编辑工具，性能提升达 <em style="color:var(--accent);font-style:normal;font-weight:700">10×</em></h4>
-          <p>Boluk 2026 —— 仅一项框架层面的改动；模型从未更换。远超模型升级通常带来的 2–4 分提升。</p>
+          <p>Boluk 2026 —— 仅一项 harness 层面的改动；模型从未更换。远超模型升级通常带来的 2–4 分提升。</p>
         </div>
       </li>
       <li>
@@ -131,48 +149,48 @@
       <li>
         <span class="n">03</span>
         <div>
-          <h4>通过自动化框架搜索，Terminal-Bench-2 达到 <em style="color:var(--accent);font-style:normal;font-weight:700">76.4%</em></h4>
-          <p>Meta-Harness 2026 —— 对框架配置的搜索，胜过最强的手动调优基线。</p>
+          <h4>通过自动化 harness 搜索，Terminal-Bench-2 达到 <em style="color:var(--accent);font-style:normal;font-weight:700">76.4%</em></h4>
+          <p>Meta-Harness 2026 —— 对 harness 配置的搜索，胜过最强的手动调优基线。</p>
         </div>
       </li>
     </ol>
 
-    <p class="run-in" style="margin-top:32px"><span class="run-in-head">一句话 ——</span> 关键约束在于框架，而非模型。这是本综述其余部分的切入点。</p>
+    <p class="run-in" style="margin-top:32px"><span class="run-in-head">一句话 ——</span> 关键约束在于 harness，而非模型。这是本综述其余部分的切入点。</p>
 
     <div class="deck-footer">
-      <span>Agent 框架工程 · 论点</span>
-      <span class="slide-number" data-current="2" data-total="16"></span>
+      <span>Agent harness 工程 · 论点</span>
+      <span class="slide-number" data-current="3" data-total="17"></span>
     </div>
     <div class="notes">三项近期实证结果 —— 模型不变，但不同的脚手架带来截然不同的可靠性表现。作者称之为『关键约束论』：基础设施已成为边际改进的来源。</div>
   </section>
 
-  <!-- ============ 3. 实践 vs 研究 ============ -->
+  <!-- ============ 4. 实践 vs 研究 ============ -->
   <section class="slide" data-title="实践与研究的鸿沟">
     <p class="kicker">论点 · 02</p>
-    <h2 class="h2">实践者深知框架的重要，<br>研究界尚缺词汇。</h2>
+    <h2 class="h2">实践者深知 harness 的重要，<br>研究界尚缺词汇。</h2>
 
     <div class="layout-sidenote">
       <div class="main-col">
-        <p>LLM 周围的基础设施层，在生产中是一种民间智慧：行之有效，却难以命名。OpenAI 将『harness engineering』视为无需人工编写即可生成<em>百万行代码</em>的关键。Anthropic 构建简单、可审视的智能体，以及为<em>智能体</em>而非为人类设计的工具。Martin Fowler 则将框架比作『AI 智能体的<em>控制论调节器</em>』。</p>
+        <p>LLM 周围的基础设施层，在生产中是一种民间智慧：行之有效，却难以命名。OpenAI 将『harness engineering』视为无需人工编写即可生成<em>百万行代码</em>的关键。Anthropic 构建简单、可审视的智能体，以及为<em>智能体</em>而非为人类设计的工具。Martin Fowler 则将 harness 比作『AI 智能体的<em>控制论调节器</em>』。</p>
         <p>研究文献孤立地讨论记忆、孤立地讨论工具、孤立地讨论规划、孤立地讨论安全。缺失的，是将这些整合为可靠运作的<em>系统</em> —— 以及一套用于讨论它的共同语言。</p>
         <p>这份综述，就是这套语言。</p>
       </div>
       <aside class="side-col">
         <p class="side-note"><span class="side-marker">A</span>OpenAI —— 2026 年将『harness engineering』确立为学科名。</p>
         <p class="side-note"><span class="side-marker">B</span>Anthropic —— 强调可审视性，以及契合智能体感知（而非人类工效）尺度的工具。</p>
-        <p class="side-note"><span class="side-marker">C</span>Fowler —— 框架即控制论调节器；是控制系统，而非外壳。</p>
+        <p class="side-note"><span class="side-marker">C</span>Fowler —— harness 即控制论调节器；是控制系统，而非外壳。</p>
         <p class="side-note"><span class="side-marker">D</span>当下，研究者与实践者正以不同名字讨论同一对象。</p>
       </aside>
     </div>
 
     <div class="deck-footer">
-      <span>Agent 框架工程 · 论点</span>
-      <span class="slide-number" data-current="3" data-total="16"></span>
+      <span>Agent harness 工程 · 论点</span>
+      <span class="slide-number" data-current="4" data-total="17"></span>
     </div>
     <div class="notes">实践者深知基础设施的重要，研究界尚未给这一系统之系统命名。综述弥合此鸿沟，使改进得以系统化推进，而非停留于民间经验。</div>
   </section>
 
-  <!-- ============ 4. 工程的三个阶段 ============ -->
+  <!-- ============ 5. 工程的三个阶段 ============ -->
   <section class="slide" data-title="工程的三个阶段">
     <p class="kicker">演进 · 工作的重心持续外移</p>
     <h2 class="h2">从 <em>prompt</em> 到 <em>context</em>，<br>再到 <em style="color:var(--accent)">harness</em> 工程。</h2>
@@ -183,19 +201,19 @@
     </figure>
 
     <div class="deck-footer">
-      <span>Agent 框架工程</span>
-      <span class="slide-number" data-current="4" data-total="16"></span>
+      <span>Agent harness 工程</span>
+      <span class="slide-number" data-current="5" data-total="17"></span>
     </div>
     <div class="notes">这是全套幻灯片中最具解释力的一张图。Prompt → Context → Harness 的演进解释了为何这一领域走到了今天：随着模型在长程任务上日益胜任，瓶颈持续外移 —— 从一段文本输入，到跨轮次的信息状态，再到模型外围的整个控制回路。</div>
   </section>
 
-  <!-- ============ 5. ETCLOVG 简介 ============ -->
+  <!-- ============ 6. ETCLOVG 简介 ============ -->
   <section class="slide tinted" data-title="ETCLOVG 简介">
     <div class="section-rule">
       <span class="lbl">第二部分 —— 分类法</span>
       <span class="line"></span>
     </div>
-    <h2 class="h2">七个层次，<em>一个框架</em>。</h2>
+    <h2 class="h2">七个层次，<em>一个 harness</em>。</h2>
 
     <figure class="hero-figure">
       <img src="./assets/img/fig-etclovg-taxonomy.png" alt="ETCLOVG 七层架构 —— 第二行的 Execution、Tools、Context、Lifecycle；上方的 Observability；以及作为上下两条边带的 Verification 与 Governance">
@@ -206,12 +224,12 @@
 
     <div class="deck-footer">
       <span>分类法 · ETCLOVG</span>
-      <span class="slide-number" data-current="5" data-total="16"></span>
+      <span class="slide-number" data-current="6" data-total="17"></span>
     </div>
     <div class="notes">ETCLOVG 在更早的六组件框架基础上扩展，将可观测性与治理提升为一等公民。两者在生产中都拥有独立的工具生态与团队归属，因此都值得自己的架构对待。</div>
   </section>
 
-  <!-- ============ 6. 执行环境（E） ============ -->
+  <!-- ============ 7. 执行环境（E） ============ -->
   <section class="slide" data-title="执行环境（E）">
     <div class="layer-mark"><span class="L">E</span><span class="name">第一层 · 执行环境</span></div>
     <h2 class="h2">沙箱即<em>笼子</em>、<em>许可证</em>，<br>与<em>重置按钮</em>。</h2>
@@ -232,12 +250,12 @@
 
     <div class="deck-footer">
       <span>第一层 · 执行环境</span>
-      <span class="slide-number" data-current="6" data-total="16"></span>
+      <span class="slide-number" data-current="7" data-total="17"></span>
     </div>
     <div class="notes">沙箱同时承担三项任务 —— 安全、可复现、活跃度 —— 这三者的组合，是使其升格为一等关注点的关键。其中『活跃度』是新出现的角度：没有沙箱，每一个高风险动作都需要人类确认，长程执行就此瓦解。</div>
   </section>
 
-  <!-- ============ 7. 工具接口（T） ============ -->
+  <!-- ============ 8. 工具接口（T） ============ -->
   <section class="slide" data-title="工具接口（T）">
     <div class="layer-mark"><span class="L">T</span><span class="name">第二层 · 工具接口</span></div>
     <h2 class="h2">更少但更好的工具，<br>胜过<em>臃肿的菜单</em>。</h2>
@@ -276,12 +294,12 @@
 
     <div class="deck-footer">
       <span>第二层 · 工具接口</span>
-      <span class="slide-number" data-current="7" data-total="16"></span>
+      <span class="slide-number" data-current="8" data-total="17"></span>
     </div>
     <div class="notes">工具层位于『覆盖度』与『决策质量』的断层之上。综述中来自生产的原则：若一位人类工程师都说不清何种情境下该用何种工具，模型同样无法。</div>
   </section>
 
-  <!-- ============ 8. 上下文与记忆（C） ============ -->
+  <!-- ============ 9. 上下文与记忆（C） ============ -->
   <section class="slide" data-title="上下文与记忆（C）">
     <div class="layer-mark"><span class="L">C</span><span class="name">第三层 · 上下文与记忆</span></div>
     <h2 class="h2">向模型提供<em>恰到好处</em>的 token —— 不多一分。</h2>
@@ -301,12 +319,12 @@
 
     <div class="deck-footer">
       <span>第三层 · 上下文与记忆</span>
-      <span class="slide-number" data-current="8" data-total="16"></span>
+      <span class="slide-number" data-current="9" data-total="17"></span>
     </div>
     <div class="notes">更大的窗口并不能解决记忆问题。Liu 2024 表明信息的位置与其存在同等重要，Hong 2025 表明退化在窗口填满之前就已开始。有效的上下文工程关乎渐进披露、压缩与缓存感知设计。</div>
   </section>
 
-  <!-- ============ 9. 生命周期与编排（L） ============ -->
+  <!-- ============ 10. 生命周期与编排（L） ============ -->
   <section class="slide" data-title="生命周期与编排（L）">
     <div class="layer-mark"><span class="L">L</span><span class="name">第四层 · 生命周期与编排</span></div>
     <h2 class="h2">从单回路到 <em>issue-到-PR</em> 的<br>完整流水线。</h2>
@@ -320,12 +338,12 @@
 
     <div class="deck-footer">
       <span>第四层 · 生命周期与编排</span>
-      <span class="slide-number" data-current="9" data-total="16"></span>
+      <span class="slide-number" data-current="10" data-total="17"></span>
     </div>
     <div class="notes">本层将执行流与其读写的运行态状态合二为一。长程任务的可靠性，取决于记住发生了什么、决定下一步、从错误中恢复、完成时停止 —— 缺一不可。</div>
   </section>
 
-  <!-- ============ 10. 可观测性（O） ============ -->
+  <!-- ============ 11. 可观测性（O） ============ -->
   <section class="slide" data-title="可观测性（O）">
     <div class="layer-mark"><span class="L">O</span><span class="name">第五层 · 可观测性</span></div>
     <h2 class="h2">追踪、成本、失败 ——<br><em>一等公民</em>。</h2>
@@ -352,12 +370,12 @@
 
     <div class="deck-footer">
       <span>第五层 · 可观测性</span>
-      <span class="slide-number" data-current="10" data-total="16"></span>
+      <span class="slide-number" data-current="11" data-total="17"></span>
     </div>
     <div class="notes">可观测性之所以独立成层，是因为它拥有独立的工具栈、规范与从业者群体。更大的故事是『可观测性—评估』之间的缺口：团队看得见智能体做了什么，却没有系统化的方式去判断它做得如何。</div>
   </section>
 
-  <!-- ============ 11. 验证（V） ============ -->
+  <!-- ============ 12. 验证（V） ============ -->
   <section class="slide" data-title="验证（V）">
     <div class="layer-mark"><span class="L">V</span><span class="name">第六层 · 验证</span></div>
     <h2 class="h2">任务到反馈的<em>生命周期</em>，<br>而非排行榜上的一个分数。</h2>
@@ -367,16 +385,16 @@
       <figcaption><span class="cap-num">图 5</span> 五个阶段，一个闭环。将任务锚定在具备成功判据的环境中；验证沙箱、工具、上下文与评估器的就绪状态；以丰富的轨迹采集执行；进行多级判断并归因失败；将结果转化为回归与部署的反馈信号。</figcaption>
     </figure>
 
-    <p class="run-in" style="margin-top:18px;max-width:none"><span class="run-in-head">分数是『模型–框架』组合的属性。</span> 公开报告的数值是<em>模型–框架</em>组合的属性，而非模型本身 —— Anthropic 表明，仅是配置改变便可在基准上引起 6 分的偏移。基础设施的噪声，可以伪装成模型的失败。</p>
+    <p class="run-in" style="margin-top:18px;max-width:none"><span class="run-in-head">分数是『模型–harness』组合的属性。</span> 公开报告的数值是<em>模型–harness</em>组合的属性，而非模型本身 —— Anthropic 表明，仅是配置改变便可在基准上引起 6 分的偏移。基础设施的噪声，可以伪装成模型的失败。</p>
 
     <div class="deck-footer">
       <span>第六层 · 验证</span>
-      <span class="slide-number" data-current="11" data-total="16"></span>
+      <span class="slide-number" data-current="12" data-total="17"></span>
     </div>
-    <div class="notes">评估被重新框定为五阶段质量控制回路。要点：公开报告的基准分数是『模型–框架』组合的属性，而非模型本身。Anthropic 表明，仅是配置变化便可在基准上造成 6 分的偏移。</div>
+    <div class="notes">评估被重新框定为五阶段质量控制回路。要点：公开报告的基准分数是『模型–harness』组合的属性，而非模型本身。Anthropic 表明，仅是配置变化便可在基准上造成 6 分的偏移。</div>
   </section>
 
-  <!-- ============ 12. 治理与安全（G） ============ -->
+  <!-- ============ 13. 治理与安全（G） ============ -->
   <section class="slide" data-title="治理与安全（G）">
     <div class="layer-mark"><span class="L">G</span><span class="name">第七层 · 治理与安全</span></div>
     <h2 class="h2">权限、钩子、加固、<em>宪法、审计</em>。</h2>
@@ -416,12 +434,12 @@
 
     <div class="deck-footer">
       <span>第七层 · 治理与安全</span>
-      <span class="slide-number" data-current="12" data-total="16"></span>
+      <span class="slide-number" data-current="13" data-total="17"></span>
     </div>
     <div class="notes">治理被提升为一等层，是因为它拥有独立的工具栈、独立的语言与生产中独立的归属。纵深防御只有在各层协同时才有效；今天所综述的智能体中，无一完整实现所有防御类别。</div>
   </section>
 
-  <!-- ============ 13. 跨层综合 ============ -->
+  <!-- ============ 14. 跨层综合 ============ -->
   <section class="slide" data-title="跨层综合">
     <div class="section-rule">
       <span class="lbl">第三部分 —— 跨层综合</span>
@@ -431,14 +449,14 @@
 
     <div class="layout-sidenote" style="margin-top:16px">
       <div class="main-col">
-        <p class="run-in"><span class="run-in-head">成本-质量-速度三难。</span> 更强的检查拖慢执行、推高成本。三者择其二；第三个便会移动。框架预算是权衡，以延迟与美元书写。</p>
+        <p class="run-in"><span class="run-in-head">成本-质量-速度三难。</span> 更强的检查拖慢执行、推高成本。三者择其二；第三个便会移动。harness 预算是权衡，以延迟与美元书写。</p>
         <p class="run-in"><span class="run-in-head">能力-控制权衡。</span> 更大的授权拓宽爆炸半径。无治理的权力是负债；无权力的治理只是演示。</p>
-        <p class="run-in"><span class="run-in-head">框架耦合。</span> 局部改动会拖累整个控制回路。将框架改动当作<em>系统</em>级改动来测试 —— 永远不要当作孤立微调。</p>
+        <p class="run-in"><span class="run-in-head">harness 耦合。</span> 局部改动会拖累整个控制回路。将 harness 改动当作<em>系统</em>级改动来测试 —— 永远不要当作孤立微调。</p>
       </div>
       <aside class="side-col">
         <p class="side-note"><span class="side-marker">i</span>生态正从『构建一个智能体』转向『运营一支智能体编队』。</p>
-        <p class="side-note"><span class="side-marker">ii</span>框架正在演化为平台 —— 多租户、计费、故障恢复、多区域运行时。</p>
-        <p class="side-note"><span class="side-marker">iii</span>分数方差不能仅归因于模型；框架承担了一半的方差。</p>
+        <p class="side-note"><span class="side-marker">ii</span>harness 正在演化为平台 —— 多租户、计费、故障恢复、多区域运行时。</p>
+        <p class="side-note"><span class="side-marker">iii</span>分数方差不能仅归因于模型；harness 承担了一半的方差。</p>
       </aside>
     </div>
 
@@ -446,12 +464,12 @@
 
     <div class="deck-footer">
       <span>跨层综合</span>
-      <span class="slide-number" data-current="13" data-total="16"></span>
+      <span class="slide-number" data-current="14" data-total="17"></span>
     </div>
-    <div class="notes">七层一旦组合起来，它们之间的相互作用便产生了任何单层都无法解决的约束。框架的改动应当作为系统级改动来测试；生态正从『构建一个智能体』转向『运营一支智能体编队』。</div>
+    <div class="notes">七层一旦组合起来，它们之间的相互作用便产生了任何单层都无法解决的约束。harness 的改动应当作为系统级改动来测试；生态正从『构建一个智能体』转向『运营一支智能体编队』。</div>
   </section>
 
-  <!-- ============ 14. 开放问题 ============ -->
+  <!-- ============ 15. 开放问题 ============ -->
   <section class="slide" data-title="开放问题">
     <p class="kicker">开放问题 · 下一阶段的五个问题</p>
     <h2 class="h2">分类法之后，<em>仍然困难的事</em>。</h2>
@@ -461,51 +479,51 @@
       <li><span class="n roman">ii</span><div><h4>在长程跨度上维持可靠状态</h4><p>跨会话、跨周次的工作所需的，远不止更大的上下文窗口。</p></div></li>
       <li><span class="n roman">iii</span><div><h4>从轨迹而非分数中诊断失败</h4><p>终态结果掩盖了轨迹所暴露的失败模式。为<em>轨迹</em>而设计，而非为排行榜。</p></div></li>
       <li><span class="n roman">iv</span><div><h4>在智能体、工具、沙箱与人之间标准化交接</h4><p>组合所需的，是传输格式与契约，而非每一次都做定制化集成。</p></div></li>
-      <li><span class="n roman">v</span><div><h4>随着模型进步，让框架持续有用 —— <em>简化</em>，而非膨胀</h4><p>Anthropic 在升级 Opus 4.5 → 4.6 时移除了脚手架；成本从 $200 降至 $125，质量持平。每一个框架组件都编码了一个『模型尚不能做某事』的假设 —— 这些假设会过期。</p></div></li>
+      <li><span class="n roman">v</span><div><h4>随着模型进步，让 harness 持续有用 —— <em>简化</em>，而非膨胀</h4><p>Anthropic 在升级 Opus 4.5 → 4.6 时移除了脚手架；成本从 $200 降至 $125，质量持平。每一个 harness 组件都编码了一个『模型尚不能做某事』的假设 —— 这些假设会过期。</p></div></li>
     </ol>
 
     <div class="deck-footer">
       <span>开放问题</span>
-      <span class="slide-number" data-current="14" data-total="16"></span>
+      <span class="slide-number" data-current="15" data-total="17"></span>
     </div>
-    <div class="notes">每一个框架组件都编码着一个『模型独自做不到某事』的假设。随着模型进步，这些假设会失效。Anthropic 从 Opus 4.5 升级至 4.6 时，便据此剥离脚手架，使成本从 $200 降至 $125，质量持平。</div>
+    <div class="notes">每一个 harness 组件都编码着一个『模型独自做不到某事』的假设。随着模型进步，这些假设会失效。Anthropic 从 Opus 4.5 升级至 4.6 时，便据此剥离脚手架，使成本从 $200 降至 $125，质量持平。</div>
   </section>
 
-  <!-- ============ 15. 关键引言 ============ -->
+  <!-- ============ 16. 关键引言 ============ -->
   <section class="slide bleed" data-title="关键引言">
     <div class="layout-quote" style="height:100%;padding-left:120px">
       <blockquote class="bigquote">
-        <span class="open-quote">&ldquo;</span>每一个框架组件，都编码着一个关于<em>模型独自做不到某事</em>的假设。
+        <span class="open-quote">&ldquo;</span>每一个 harness 组件，都编码着一个关于<em>模型独自做不到某事</em>的假设。
       </blockquote>
-      <p class="quote-source"><span class="rule"></span>Anthropic &middot; 长程应用的框架设计 · 2026</p>
+      <p class="quote-source"><span class="rule"></span>Anthropic &middot; 长程应用的 harness 设计 · 2026</p>
     </div>
     <div class="deck-footer" style="padding:0 96px">
       <span>关键引言</span>
-      <span class="slide-number" data-current="15" data-total="16"></span>
+      <span class="slide-number" data-current="16" data-total="17"></span>
     </div>
-    <div class="notes">综述全文中最令人记忆深刻的一句。框架组件编码了对模型能力上限的假设；当模型进步，这些假设过期，脚手架便应被剥离。仅移除上下文重置一项，便让 Anthropic 的成本下降 37%，质量不减。</div>
+    <div class="notes">综述全文中最令人记忆深刻的一句。harness 组件编码了对模型能力上限的假设；当模型进步，这些假设过期，脚手架便应被剥离。仅移除上下文重置一项，便让 Anthropic 的成本下降 37%，质量不减。</div>
   </section>
 
-  <!-- ============ 16. 要点 ============ -->
+  <!-- ============ 17. 要点 ============ -->
   <section class="slide" data-title="要点">
     <p class="kicker">要点 · 周一就可以做的事</p>
-    <h2 class="h2">把框架当作<em>独立的工程对象</em>来对待。</h2>
+    <h2 class="h2">把 harness 当作<em>独立的工程对象</em>来对待。</h2>
 
     <ol class="hanging-list">
-      <li><span class="n">01</span><div><h4>基础设施质量，而非模型大小，决定了可靠性的上限</h4><p>关键约束在于框架。据此分配工作预算。</p></div></li>
-      <li><span class="n">02</span><div><h4>用 ETCLOVG 来划分并改进框架的各层</h4><p>七个层次；一套被团队与论文共用的语言。</p></div></li>
+      <li><span class="n">01</span><div><h4>基础设施质量，而非模型大小，决定了可靠性的上限</h4><p>关键约束在于 harness。据此分配工作预算。</p></div></li>
+      <li><span class="n">02</span><div><h4>用 ETCLOVG 来划分并改进 harness 的各层</h4><p>七个层次；一套被团队与论文共用的语言。</p></div></li>
       <li><span class="n">03</span><div><h4>可观测性与治理，值得拥有专属的所有权</h4><p>二者不是附录；二者是一等公民。按此配置人力。</p></div></li>
-      <li><span class="n">04</span><div><h4>评估的是『模型–框架』组合；轨迹是首要证据</h4><p>排行榜上的分数是组合行为的聚合，而非模型本身的属性。</p></div></li>
-      <li><span class="n">05</span><div><h4>随着模型进步，做减法；不要默认更多脚手架更好</h4><p>自适应的简化，才是持久目标。每一次升级，重新评估每一个框架假设。</p></div></li>
+      <li><span class="n">04</span><div><h4>评估的是『模型–harness』组合；轨迹是首要证据</h4><p>排行榜上的分数是组合行为的聚合，而非模型本身的属性。</p></div></li>
+      <li><span class="n">05</span><div><h4>随着模型进步，做减法；不要默认更多脚手架更好</h4><p>自适应的简化，才是持久目标。每一次升级，重新评估每一个 harness 假设。</p></div></li>
     </ol>
 
     <p class="middot-list dim2" style="margin-top:48px;text-align:center"><span>致谢</span><span>ETCLOVG</span><span>170 个项目的完整附录详见原综述</span></p>
 
     <div class="deck-footer">
       <span>要点 · 完</span>
-      <span class="slide-number" data-current="16" data-total="16"></span>
+      <span class="slide-number" data-current="17" data-total="17"></span>
     </div>
-    <div class="notes">综述在结尾承认了其偏向：以英语、GitHub 可见、面向编码的智能体项目为主。自然的下一步，是将 ETCLOVG 从描述性分类法转化为规范性框架，用以指引而非仅仅分类。</div>
+    <div class="notes">综述在结尾承认了其偏向：以英语、GitHub 可见、面向编码的智能体项目为主。自然的下一步，是将 ETCLOVG 从描述性分类法转化为规范性 harness，用以指引而非仅仅分类。</div>
   </section>
 
 </div>
