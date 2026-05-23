@@ -8,7 +8,35 @@
 
 **Author:** lewis &lt;sudolewis@gmail.com&gt;
 **License:** MIT
-**中文文档:** [README.zh-CN.md](README.zh-CN.md)
+**Upstream docs:** English [README.md](README.md) · 中文 [README.zh-CN.md](README.zh-CN.md)
+**This project (vendored):** 中文使用说明 [README.cn.md](README.cn.md)
+
+---
+
+## In this project — companion decks on agent harness engineering
+
+This `html-ppt-skill/` is vendored as the runtime for **three HTML decks** in this repo. Each deck is a single self-contained `main.html` that loads the skill from `../../html-ppt-skill/assets/...` and shares one theme file at `../anthropic.css`.
+
+| Deck | Topic | Open with |
+| --- | --- | --- |
+| [`presentation/harness-LR/main.html`](../presentation/harness-LR/main.html) | Academic survey of agent harness engineering (Li et al., TMLR 2026) — English, 17 slides | `open presentation/harness-LR/main.html` |
+| [`presentation/harness-LR/main-cn.html`](../presentation/harness-LR/main-cn.html) | Same survey — 中文版（keeps `harness` untranslated; includes 词源 etymology slide） | `open presentation/harness-LR/main-cn.html` |
+| [`presentation/harness-anthropic/main.html`](../presentation/harness-anthropic/main.html) | **Anthropic's practitioner view**, synthesized from three Anthropic Engineering posts — English, 16 slides | `open presentation/harness-anthropic/main.html` |
+
+**Keyboard while viewing any deck:**
+
+```
+← → Space    navigate
+Home End     first / last slide
+N            speaker notes drawer
+S            presenter view (separate window with timer + script)
+F            fullscreen
+T            cycle themes (only `anthropic` installed here)
+```
+
+**Style + workflow used to build these decks:** the shared theme at `presentation/anthropic.css` (Charter body + system-sans headings, Anthropic warm palette) plus the workflow recipe at `presentation/deck-skill/SKILL.md`. To produce a new deck in the same style, see `presentation/deck-skill/reference/patterns.md`.
+
+---
 
 ![html-ppt — cover with live previews](docs/readme/hero.gif)
 
