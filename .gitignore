@@ -1,0 +1,11 @@
+# macOS
+.DS_Store
+
+# PDF page renders — kept for local reference only.
+# See presentation/assets/img/MANIFEST.md for what's actually used by the deck.
+presentation/assets/img/page-*.png
+
+# Editor / temp artifacts
+*.log
+.vscode/
+.idea/

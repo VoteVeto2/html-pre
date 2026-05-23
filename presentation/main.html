@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="anthropic">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Agent Harness Engineering — A Survey</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="../html-ppt-skill/assets/fonts.css">
+<link rel="stylesheet" href="../html-ppt-skill/assets/base.css">
+<link rel="stylesheet" id="theme-link" href="./anthropic.css">
+<link rel="stylesheet" href="../html-ppt-skill/assets/animations/animations.css">
+<style>
+  /* Local structural overrides only — colors flow through CSS variables in anthropic.css */
+  .slide{padding:88px 112px}
+  .slide.tinted{background:var(--bg-soft)}
+  .slide.bleed{padding:0}
+
+  /* Cover layout — drop cap intro, type-driven */
+  .cover-wrap{display:flex;flex-direction:column;justify-content:center;height:100%;max-width:1180px}
+  .cover-h1{
+    font-family:var(--font-display);font-weight:600;
+    font-size:clamp(72px,8vw,128px);line-height:.96;letter-spacing:-.025em;
+    color:var(--text-1);margin:0 0 36px;font-variation-settings:"opsz" 72;
+    text-wrap:balance;
+  }
+  .cover-h1 em{font-style:italic;color:var(--accent);font-weight:600}
+  .cover-thinrule{width:88px;height:1px;background:var(--accent);margin:8px 0 30px}
+  .cover-meta{margin-top:48px;display:grid;gap:12px;max-width:780px}
+
+  /* Slide-specific small layouts */
+  .two-col-fig{display:grid;grid-template-columns:1.05fr 1fr;gap:64px;align-items:center;margin-top:8px}
+  .two-col-fig .fig-side img{max-width:100%;max-height:520px;height:auto;border:1px solid var(--border);border-radius:6px;background:var(--surface)}
+  .two-col-fig .fig-side figcaption{font-family:var(--font-ui);font-size:11.5px;line-height:1.5;color:var(--text-3);margin-top:10px;letter-spacing:.02em}
+  .two-col-fig .fig-side figcaption .cap-num{font-weight:700;color:var(--accent);letter-spacing:.12em;text-transform:uppercase;margin-right:8px;font-size:11px}
+
+  .hero-figure{display:flex;flex-direction:column;align-items:center;margin-top:8px}
+  .hero-figure img{max-width:84%;max-height:620px;height:auto;width:auto;border:1px solid var(--border);border-radius:6px;background:var(--surface)}
+  .hero-figure figcaption{font-family:var(--font-ui);font-size:12px;line-height:1.5;color:var(--text-3);margin-top:16px;max-width:72ch;text-align:center;letter-spacing:.02em}
+  .hero-figure figcaption .cap-num{font-weight:700;color:var(--accent);letter-spacing:.12em;text-transform:uppercase;margin-right:8px;font-size:11px}
+
+  .strip-figure img{max-height:200px;width:auto;border:1px solid var(--border);border-radius:6px;background:var(--surface);margin-top:18px}
+  .strip-figure figcaption{font-family:var(--font-ui);font-size:11.5px;color:var(--text-3);margin-top:10px;letter-spacing:.02em}
+
+  /* Cover doesn't show the page number ribbon */
+  .slide.cover .deck-footer{justify-content:flex-end}
+
+  /* Run-in row — three stacked run-in headings inline */
+  .run-stack{display:grid;gap:14px;margin-top:24px;max-width:760px}
+
+  /* Layer page kicker spans + accent letter */
+  .layer-mark{display:inline-flex;align-items:baseline;gap:14px;margin:0 0 14px}
+  .layer-mark .L{
+    font-family:var(--font-display);font-weight:600;font-size:64px;line-height:1;
+    color:var(--accent);letter-spacing:-.04em;font-variation-settings:"opsz" 60;
+  }
+  .layer-mark .name{
+    font-family:var(--font-ui);font-size:11px;font-weight:600;
+    letter-spacing:.2em;text-transform:uppercase;color:var(--text-3);
+    align-self:center;padding-bottom:6px;
+  }
+</style>
+</head>
+<body data-themes="anthropic" data-theme-base="./">
+<div class="deck">
+
+  <!-- ============ 1. COVER ============ -->
+  <section class="slide cover" data-title="Cover">
+    <div class="deck-header">
+      <span class="eyebrow">A Survey · Submitted to TMLR 2026</span>
+      <span class="eyebrow">Agent Harness Engineering</span>
+    </div>
+
+    <div class="cover-wrap">
+      <p class="kicker">A Survey · Agent Engineering</p>
+      <h1 class="cover-h1">Agent Harness<br><em>Engineering</em></h1>
+      <span class="cover-thinrule"></span>
+      <p class="dropcap-para">
+        <span class="dropcap">T</span>he harness, not the model, is the binding constraint on real-world LLM agent reliability. Seven layers, 170+ open-source projects, one taxonomy — and a vocabulary, finally, for what practitioners already know.
+      </p>
+
+      <div class="cover-meta">
+        <p class="middot-list"><span>Junjie Li</span><span>Xi Xiao</span><span>Yunbei Zhang</span><span>Chen Liu</span><span>et al.</span></p>
+        <p class="middot-list dim2"><span>CMU</span><span>Yale</span><span>JHU</span><span>Tulane</span><span>OSU</span><span>Virginia Tech</span><span>Amazon</span></p>
+      </div>
+    </div>
+
+    <div class="deck-footer">
+      <span class="slide-number" data-current="1" data-total="16"></span>
+    </div>
+    <div class="notes">This survey argues that the infrastructure layer wrapping an LLM is now the dominant variable in agent reliability. It synthesizes practitioner knowledge from OpenAI, Anthropic, and LangChain with academic research and maps 170+ open-source projects to a new taxonomy. The cover sets the tone — essay, not slideware.</div>
+  </section>
+
+  <!-- ============ 2. THE BINDING CONSTRAINT ============ -->
+  <section class="slide" data-title="The Binding Constraint">
+    <p class="kicker">Thesis · 01</p>
+    <h2 class="h2">Better models alone do not produce<br>more reliable agents.</h2>
+    <p class="lede">Three independent empirical results in early 2026. The variable held constant was the model; what changed was the harness.</p>
+
+    <ol class="hanging-list">
+      <li>
+        <span class="n">01</span>
+        <div>
+          <h4>Up to <em style="color:var(--accent);font-style:normal;font-weight:700">10×</em> gains from a single edit-tool change</h4>
+          <p>Boluk 2026 — one harness-only intervention; the model never moved. Beats the typical 2–4 point gain from a model upgrade.</p>
+        </div>
+      </li>
+      <li>
+        <span class="n">02</span>
+        <div>
+          <h4><em style="color:var(--accent);font-style:normal;font-weight:700">+13.7</em> points on Terminal-Bench from infrastructure alone</h4>
+          <p>Trivedy 2026 — no new training data, no new model. Just better plumbing around the same Claude.</p>
+        </div>
+      </li>
+      <li>
+        <span class="n">03</span>
+        <div>
+          <h4><em style="color:var(--accent);font-style:normal;font-weight:700">76.4%</em> on Terminal-Bench-2 via automated harness search</h4>
+          <p>Meta-Harness 2026 — search over harness configurations beat the strongest hand-tuned baseline.</p>
+        </div>
+      </li>
+    </ol>
+
+    <p class="run-in" style="margin-top:32px"><span class="run-in-head">In a sentence —</span> the binding constraint is the harness, not the model. This is the wedge for the rest of the survey.</p>
+
+    <div class="deck-footer">
+      <span>Agent Harness Engineering · Thesis</span>
+      <span class="slide-number" data-current="2" data-total="16"></span>
+    </div>
+    <div class="notes">Three recent empirical results — same model held constant, dramatically different reliability under different scaffolding. The authors call this the binding-constraint thesis: infrastructure is now where marginal improvements come from.</div>
+  </section>
+
+  <!-- ============ 3. PRACTITIONER-RESEARCH GAP ============ -->
+  <section class="slide" data-title="Practitioner-Research Gap">
+    <p class="kicker">Thesis · 02</p>
+    <h2 class="h2">Practitioners know harnesses matter.<br>Research lacks the vocabulary.</h2>
+
+    <div class="layout-sidenote">
+      <div class="main-col">
+        <p>The infrastructure layer around an LLM is folklore in production: known to work, hard to name. OpenAI credits <em>harness engineering</em> for producing a million lines of code without manual writing. Anthropic builds simple, inspectable agents and tools <em>designed for agents, not humans</em>. Martin Fowler frames the harness as a <em>cybernetic governor for AI agents</em>.</p>
+        <p>The research literature studies memory in isolation, tools in isolation, planning in isolation, safety in isolation. What is missing is the system that integrates these into reliable operation — and a shared vocabulary to talk about it.</p>
+        <p>This survey is that vocabulary.</p>
+      </div>
+      <aside class="side-col">
+        <p class="side-note"><span class="side-marker">A</span>OpenAI &mdash; &ldquo;harness engineering&rdquo; coined as a discipline name in 2026.</p>
+        <p class="side-note"><span class="side-marker">B</span>Anthropic &mdash; emphasis on inspectability and on tools sized to agent perception, not human ergonomics.</p>
+        <p class="side-note"><span class="side-marker">C</span>Fowler &mdash; the harness as a <em>cybernetic governor</em>; a control system, not a wrapper.</p>
+        <p class="side-note"><span class="side-marker">D</span>Today researchers and practitioners are looking at the same artifacts under different names.</p>
+      </aside>
+    </div>
+
+    <div class="deck-footer">
+      <span>Agent Harness Engineering · Thesis</span>
+      <span class="slide-number" data-current="3" data-total="16"></span>
+    </div>
+    <div class="notes">Practitioners know infrastructure matters; the research community has not yet given the system-of-systems a name. The survey bridges this gap so improvements can be made systematically rather than as folklore.</div>
+  </section>
+
+  <!-- ============ 4. THREE ENGINEERING PHASES ============ -->
+  <section class="slide" data-title="Three Engineering Phases">
+    <p class="kicker">Evolution · The work keeps moving outward</p>
+    <h2 class="h2">From <em style="font-style:italic">prompt</em> to <em style="font-style:italic">context</em> to <em style="font-style:italic;color:var(--accent)">harness</em> engineering.</h2>
+
+    <figure class="hero-figure">
+      <img src="./assets/img/fig-three-phases.png" alt="Three engineering phases — Prompt Engineering (2022–2024), Context Engineering (2025), Harness Engineering (2026) — each subsumes the previous">
+      <figcaption><span class="cap-num">Fig 1</span> Each phase subsumes the previous; they overlap rather than replace. The unit of optimization shifts outward — from a single text input, to a rolling information state, to the entire control system around the model.</figcaption>
+    </figure>
+
+    <div class="deck-footer">
+      <span>Agent Harness Engineering</span>
+      <span class="slide-number" data-current="4" data-total="16"></span>
+    </div>
+    <div class="notes">This is the deck's single most explanatory diagram. The progression Prompt → Context → Harness explains why the field is here today. As models got better at long-horizon work, the bottleneck shifted outward — from one text input, to information state across turns, to the entire control loop.</div>
+  </section>
+
+  <!-- ============ 5. INTRODUCING ETCLOVG ============ -->
+  <section class="slide tinted" data-title="Introducing ETCLOVG">
+    <div class="section-rule">
+      <span class="lbl">Part Two — The Taxonomy</span>
+      <span class="line"></span>
+    </div>
+    <h2 class="h2">Seven layers, <em>one harness</em>.</h2>
+
+    <figure class="hero-figure">
+      <img src="./assets/img/fig-etclovg-taxonomy.png" alt="ETCLOVG seven-layer architecture — Execution, Tools, Context, Lifecycle on row 2; Observability above; Verification and Governance as bracketing bands">
+      <figcaption><span class="cap-num">Fig 2</span> ETCLOVG extends prior six-component frameworks by promoting Observability and Governance to first-class layers — each has distinct tooling and team ownership in production.</figcaption>
+    </figure>
+
+    <p class="middot-list dim2" style="margin-top:24px;text-align:center"><span><strong style="color:var(--accent)">E</strong> Execution</span><span><strong style="color:var(--accent)">T</strong> Tools</span><span><strong style="color:var(--accent)">C</strong> Context</span><span><strong style="color:var(--accent)">L</strong> Lifecycle</span><span><strong style="color:var(--accent)">O</strong> Observability</span><span><strong style="color:var(--accent)">V</strong> Verification</span><span><strong style="color:var(--accent)">G</strong> Governance</span></p>
+
+    <div class="deck-footer">
+      <span>The Taxonomy · ETCLOVG</span>
+      <span class="slide-number" data-current="5" data-total="16"></span>
+    </div>
+    <div class="notes">ETCLOVG extends earlier six-component frameworks by promoting Observability and Governance to first-class layers. Both have distinct tooling ecosystems and team ownership in production, so they deserve their own architectural treatment.</div>
+  </section>
+
+  <!-- ============ 6. LAYER E — EXECUTION ENVIRONMENT ============ -->
+  <section class="slide" data-title="Execution Environment (E)">
+    <div class="layer-mark"><span class="L">E</span><span class="name">Layer One · Execution Environment</span></div>
+    <h2 class="h2">Sandboxes are <em>cage, license,</em> and <em>reset button</em>.</h2>
+
+    <div class="bignum" style="margin-top:32px">
+      <div class="bignum-val">84<span class="bignum-unit">%</span></div>
+      <p class="bignum-cap">
+        reduction in Claude Code permission prompts via a properly engineered sandbox.
+        <span class="src">Anthropic · production data, 2026</span>
+      </p>
+    </div>
+
+    <div class="run-stack" style="max-width:none">
+      <p class="run-in"><span class="run-in-head">Security.</span> LLM-emitted code is non-auditable and runs autonomously. The sandbox is the only audit trail.</p>
+      <p class="run-in"><span class="run-in-head">Reproducibility.</span> A baseline snapshot makes evaluation and training comparable across runs.</p>
+      <p class="run-in"><span class="run-in-head">Liveness.</span> A bounded region in which the agent can act without prompting a human — without this, long-horizon execution dies of a thousand confirmations.</p>
+    </div>
+
+    <div class="deck-footer">
+      <span>Layer E · Execution Environment</span>
+      <span class="slide-number" data-current="6" data-total="16"></span>
+    </div>
+    <div class="notes">Sandboxing serves three jobs at once — security, reproducibility, liveness — and the combination is what elevates it to a first-class concern. Liveness is the new one: without a sandbox every risky action needs a human prompt, which destroys long-horizon execution.</div>
+  </section>
+
+  <!-- ============ 7. LAYER T — TOOL INTERFACE ============ -->
+  <section class="slide" data-title="Tool Interface (T)">
+    <div class="layer-mark"><span class="L">T</span><span class="name">Layer Two · Tool Interface</span></div>
+    <h2 class="h2">Fewer but better tools<br>beat <em>bloated menus</em>.</h2>
+
+    <div class="two-col-fig">
+      <div>
+        <ol class="hanging-list" style="margin-top:0">
+          <li>
+            <span class="n">i</span>
+            <div>
+              <h4>Protocols converging on the wire format</h4>
+              <p><strong>MCP</strong> for agent-to-capability, <strong>A2A</strong> for agent-to-agent. Function calling and OpenAPI remain foundational underneath.</p>
+            </div>
+          </li>
+          <li>
+            <span class="n">ii</span>
+            <div>
+              <h4>Discovery must be adaptive</h4>
+              <p><code style="font-family:var(--font-mono);font-size:.92em">AGENTS.md</code> encodes tool usage in version control. Static global lists degrade reliability and inflate prompts.</p>
+            </div>
+          </li>
+          <li>
+            <span class="n">iii</span>
+            <div>
+              <h4>The production principle</h4>
+              <p>If a human engineer cannot say which tool applies in a situation, the model cannot either.</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+      <figure class="fig-side">
+        <img src="./assets/img/fig-tool-interface-tree.png" alt="Tool-interface tree — protocol standards, description / discovery, training / integration, scalability">
+        <figcaption><span class="cap-num">Fig 3</span> Four tool-interface subcategories — protocol standards, description &amp; discovery, training / integration, scalability.</figcaption>
+      </figure>
+    </div>
+
+    <div class="deck-footer">
+      <span>Layer T · Tool Interface</span>
+      <span class="slide-number" data-current="7" data-total="16"></span>
+    </div>
+    <div class="notes">The tool layer sits at the fault line between coverage and decision quality. The production principle from the paper: if a human engineer cannot say which tool applies in a situation, the model cannot either.</div>
+  </section>
+
+  <!-- ============ 8. LAYER C — CONTEXT & MEMORY ============ -->
+  <section class="slide" data-title="Context and Memory (C)">
+    <div class="layer-mark"><span class="L">C</span><span class="name">Layer Three · Context &amp; Memory</span></div>
+    <h2 class="h2">Give the model <em>exactly the right tokens</em> — nothing more.</h2>
+
+    <div class="layout-sidenote" style="grid-template-columns:auto 1fr;gap:96px;align-items:center;margin-top:24px">
+      <div>
+        <div class="bignum-val" style="font-size:220px">30<span class="bignum-unit">%</span></div>
+        <p class="label-caps" style="margin-top:6px"><span class="accent">Liu 2024</span> &nbsp; The U-Shaped Curve</p>
+      </div>
+      <div class="main-col" style="max-width:560px">
+        <p>Accuracy drops by 30+ points when relevant information sits in the <em>middle</em> of context. Attention is quadratic; long context is architecturally expensive; bigger windows do not fix the memory problem.</p>
+        <p class="run-in"><span class="run-in-head">Context rot.</span> 18 frontier models degrade well before the window is full (Hong 2025).</p>
+        <p class="run-in"><span class="run-in-head">Three tiers.</span> Active window, session state, persistent memory — each demands different discipline.</p>
+        <p class="run-in"><span class="run-in-head">KV-cache hit rate</span> is &ldquo;the single most important metric&rdquo; (Manus team).</p>
+      </div>
+    </div>
+
+    <div class="deck-footer">
+      <span>Layer C · Context &amp; Memory</span>
+      <span class="slide-number" data-current="8" data-total="16"></span>
+    </div>
+    <div class="notes">Bigger windows do not fix the memory problem. Liu 2024 showed information placement matters as much as presence; Hong 2025 showed degradation begins long before windows fill. Effective context engineering is about progressive disclosure, compaction, and cache-aware design.</div>
+  </section>
+
+  <!-- ============ 9. LAYER L — LIFECYCLE & ORCHESTRATION ============ -->
+  <section class="slide" data-title="Lifecycle and Orchestration (L)">
+    <div class="layer-mark"><span class="L">L</span><span class="name">Layer Four · Lifecycle &amp; Orchestration</span></div>
+    <h2 class="h2">From single loop to <em>issue-to-pull-request pipeline</em>.</h2>
+
+    <figure class="hero-figure">
+      <img src="./assets/img/fig-lifecycle-orchestration-tree.png" alt="Three orchestration patterns — single-agent loop, multi-agent composition (hierarchical/team/workflow/fan-out/graph), full lifecycle pipeline">
+      <figcaption><span class="cap-num">Fig 4</span> Three orchestration patterns. The smallest stable unit is the ReAct-style single loop; multi-agent composition adds five patterns on top; the full lifecycle pipeline spans planning, code, test, review and merge.</figcaption>
+    </figure>
+
+    <p class="run-in" style="margin-top:20px;max-width:none"><span class="run-in-head">Reliability hinges on four moves —</span> remember what happened, decide what is next, recover from errors, stop when done. State here is <em>operational</em>; distinct from memory, distinct from observability.</p>
+
+    <div class="deck-footer">
+      <span>Layer L · Lifecycle &amp; Orchestration</span>
+      <span class="slide-number" data-current="9" data-total="16"></span>
+    </div>
+    <div class="notes">This layer combines execution flow with the operational state the flow reads and writes. Reliability over long tasks depends on remembering what happened, deciding what is next, recovering from errors, and stopping when done.</div>
+  </section>
+
+  <!-- ============ 10. LAYER O — OBSERVABILITY ============ -->
+  <section class="slide" data-title="Observability (O)">
+    <div class="layer-mark"><span class="L">O</span><span class="name">Layer Five · Observability</span></div>
+    <h2 class="h2">Traces, costs, failures<br>as <em>first-class concerns</em>.</h2>
+
+    <div class="statrow">
+      <div class="stat">
+        <div class="val">89<span class="u">%</span></div>
+        <p class="lbl">Adoption</p>
+        <p>of teams report some observability tooling in their agent stack.</p>
+      </div>
+      <div class="stat">
+        <div class="val">52<span class="u">%</span></div>
+        <p class="lbl">Evaluation gap</p>
+        <p>run offline evaluations — the gap is the story.</p>
+      </div>
+      <div class="stat">
+        <div class="val">98<span class="u">%</span></div>
+        <p class="lbl">FrugalGPT</p>
+        <p>cost reduction via cascade routing across model tiers.</p>
+      </div>
+    </div>
+
+    <p class="run-in" style="margin-top:36px;max-width:none;border-top:1px solid var(--border);padding-top:24px"><span class="run-in-head">The bigger story —</span> the observability–evaluation gap. Teams can <em>see</em> what agents did but cannot systematically <em>judge</em> it. The stack converges on OpenTelemetry conventions; Langfuse, Opik, Phoenix, MLflow do the dashboards. AgentSight uses eBPF to monitor outside the agent process entirely.</p>
+
+    <div class="deck-footer">
+      <span>Layer O · Observability</span>
+      <span class="slide-number" data-current="10" data-total="16"></span>
+    </div>
+    <div class="notes">Observability earned its own layer because it has a dedicated tooling stack, instrumentation standards, and dedicated practitioners. The bigger story is the observability-evaluation gap: teams can see what agents did but cannot systematically judge it.</div>
+  </section>
+
+  <!-- ============ 11. LAYER V — VERIFICATION ============ -->
+  <section class="slide" data-title="Verification (V)">
+    <div class="layer-mark"><span class="L">V</span><span class="name">Layer Six · Verification</span></div>
+    <h2 class="h2">A task-to-feedback <em>lifecycle</em>,<br>not a leaderboard score.</h2>
+
+    <figure class="hero-figure">
+      <img src="./assets/img/fig-task-feedback-lifecycle.png" alt="Five-stage circular task-to-feedback lifecycle — ground, validate, execute, judge, feed back" style="max-height:560px">
+      <figcaption><span class="cap-num">Fig 5</span> Five stages, one loop. Ground tasks in environments with success criteria; validate sandbox / tools / context / evaluator readiness; execute with rich trace capture; judge multi-level with failure attribution; convert outcomes into regression and deployment feedback.</figcaption>
+    </figure>
+
+    <p class="run-in" style="margin-top:18px;max-width:none"><span class="run-in-head">Scores are pair properties.</span> Reported numbers are properties of the <em>model–harness pair</em>, not the model alone — Anthropic showed configuration alone shifts benchmark scores by 6 points. Infrastructure noise can masquerade as model failure.</p>
+
+    <div class="deck-footer">
+      <span>Layer V · Verification</span>
+      <span class="slide-number" data-current="11" data-total="16"></span>
+    </div>
+    <div class="notes">Evaluation is reframed as a five-stage quality-control loop. The takeaway: reported benchmark scores are properties of the model-harness pair, not the model alone. Anthropic showed configuration changes alone shift benchmark scores by 6 points.</div>
+  </section>
+
+  <!-- ============ 12. LAYER G — GOVERNANCE & SECURITY ============ -->
+  <section class="slide" data-title="Governance and Security (G)">
+    <div class="layer-mark"><span class="L">G</span><span class="name">Layer Seven · Governance &amp; Security</span></div>
+    <h2 class="h2">Permission, hooks, hardening,<br><em>constitutions, audit</em>.</h2>
+
+    <dl class="dict" style="margin-top:18px">
+      <div class="entry">
+        <div class="letter">i</div>
+        <div class="body">
+          <dt>Permission models <span class="pos">&middot; how authority is granted</span></dt>
+          <dd>Static, contextual, identity-aware delegation across users, tools, and agents.</dd>
+        </div>
+      </div>
+      <div class="entry">
+        <div class="letter">ii</div>
+        <div class="body">
+          <dt>Four hook points <span class="pos">&middot; where checks fire</span></dt>
+          <dd>Input · action · post-execution · human-in-the-loop. Coordinated checkpoints, not scattered guards.</dd>
+        </div>
+      </div>
+      <div class="entry">
+        <div class="letter">iii</div>
+        <div class="body">
+          <dt>Component hardening <span class="pos">&middot; protect each surface</span></dt>
+          <dd>Instruction hierarchy, Llama Guard, MCP signing — defense at each integration boundary.</dd>
+        </div>
+      </div>
+      <div class="entry">
+        <div class="letter">iv</div>
+        <div class="body">
+          <dt>Declarative constitutions <span class="pos">&middot; policy as text</span></dt>
+          <dd>Training-time constitutional AI <em>and</em> YAML deployment policy — two languages, one intent.</dd>
+        </div>
+      </div>
+    </dl>
+
+    <figure class="strip-figure">
+      <img src="./assets/img/fig-hook-points.png" alt="Linear diagram of four hook points H1–H4 along one tool-use cycle — Input → LLM → Tool → Response">
+      <figcaption><span class="cap-num" style="font-family:var(--font-ui);font-weight:700;color:var(--accent);letter-spacing:.12em;text-transform:uppercase;margin-right:8px;font-size:11px">Fig 6</span> Four hook points H1–H4 across one tool-use cycle. Defense-in-depth fails if the layers are not coordinated; no surveyed agent fully implements all defense categories today.</figcaption>
+    </figure>
+
+    <div class="deck-footer">
+      <span>Layer G · Governance &amp; Security</span>
+      <span class="slide-number" data-current="12" data-total="16"></span>
+    </div>
+    <div class="notes">Governance was promoted to a first-class layer because it has its own tooling, languages, and ownership in production. The defense-in-depth pattern fails if layers are not coordinated, and no surveyed agent fully implements all defense categories today.</div>
+  </section>
+
+  <!-- ============ 13. CROSS-LAYER SYNTHESIS ============ -->
+  <section class="slide" data-title="Cross-Layer Synthesis">
+    <div class="section-rule">
+      <span class="lbl">Part Three — Cross-Layer Synthesis</span>
+      <span class="line"></span>
+    </div>
+    <h2 class="h2">Three forces, <em>not isolated layers</em>.</h2>
+
+    <div class="layout-sidenote" style="margin-top:16px">
+      <div class="main-col">
+        <p class="run-in"><span class="run-in-head">Cost–Quality–Speed Trilemma.</span> Stronger checks slow execution and inflate cost. Pick two; the third moves. Harness budgets are budget tradeoffs, written in latency and dollars.</p>
+        <p class="run-in"><span class="run-in-head">Capability–Control Tradeoff.</span> More authority widens the blast radius. Power without governance is liability; governance without power is a demo.</p>
+        <p class="run-in"><span class="run-in-head">Harness Coupling.</span> Local changes regress the whole control loop. Test harness changes as <em>system</em> changes — never as isolated tweaks.</p>
+      </div>
+      <aside class="side-col">
+        <p class="side-note"><span class="side-marker">i</span>The ecosystem is shifting from <em>build an agent</em> to <em>operate a fleet of agents</em>.</p>
+        <p class="side-note"><span class="side-marker">ii</span>Frameworks are becoming platforms — tenancy, billing, fault recovery, multi-region runtime.</p>
+        <p class="side-note"><span class="side-marker">iii</span>Score variance cannot be attributed to the model alone; the harness owns half the variance.</p>
+      </aside>
+    </div>
+
+    <div class="dinkus" style="margin-top:24px"></div>
+
+    <div class="deck-footer">
+      <span>Cross-Layer Synthesis</span>
+      <span class="slide-number" data-current="13" data-total="16"></span>
+    </div>
+    <div class="notes">Once the seven layers are composed, their interactions create constraints no single layer can solve. Harness changes should be tested as system changes; the ecosystem is shifting from "build an agent" to "operate a fleet of agents."</div>
+  </section>
+
+  <!-- ============ 14. OPEN PROBLEMS ============ -->
+  <section class="slide" data-title="Open Problems">
+    <p class="kicker">Open Problems · Five questions for the next phase</p>
+    <h2 class="h2">What stays hard <em>after the taxonomy</em>.</h2>
+
+    <ol class="hanging-list">
+      <li><span class="n roman">i</span><div><h4>Harden execution under real threat models</h4><p>Scale sandboxes from research prototypes to production targets that adversaries will actively probe.</p></div></li>
+      <li><span class="n roman">ii</span><div><h4>Maintain reliable state across long horizons</h4><p>Multi-session, multi-week work demands more than larger context windows.</p></div></li>
+      <li><span class="n roman">iii</span><div><h4>Diagnose failures from traces, not scores</h4><p>Final outcomes hide the failure modes that traces expose. Build for the trace, not the leaderboard.</p></div></li>
+      <li><span class="n roman">iv</span><div><h4>Standardize handoffs across agents, tools, sandboxes, humans</h4><p>Composition needs a wire format and a contract, not a custom integration each time.</p></div></li>
+      <li><span class="n roman">v</span><div><h4>Keep harnesses useful as models improve — <em>simplify</em>, do not bloat</h4><p>Anthropic removed scaffolding upgrading Opus 4.5 → 4.6; cost fell from $200 to $125 with equal quality. Every harness component encodes an assumption about what the model cannot do — those assumptions go stale.</p></div></li>
+    </ol>
+
+    <div class="deck-footer">
+      <span>Open Problems</span>
+      <span class="slide-number" data-current="14" data-total="16"></span>
+    </div>
+    <div class="notes">Every harness component encodes an assumption about what the model cannot do on its own. Those assumptions go stale as models improve. Anthropic's Opus 4.5 → 4.6 upgrade let them strip scaffolding and cut cost from $200 to $125 with equal quality.</div>
+  </section>
+
+  <!-- ============ 15. KEY QUOTE ============ -->
+  <section class="slide bleed" data-title="Key Quote">
+    <div class="layout-quote" style="height:100%;padding-left:120px">
+      <blockquote class="bigquote">
+        <span class="open-quote">&ldquo;</span>Every harness component encodes an <em>assumption</em> about what the model cannot do on its own.
+      </blockquote>
+      <p class="quote-source"><span class="rule"></span>Anthropic &middot; Harness Design for Long-Running Apps · 2026</p>
+    </div>
+    <div class="deck-footer" style="padding:0 96px">
+      <span>Key Quote</span>
+      <span class="slide-number" data-current="15" data-total="16"></span>
+    </div>
+    <div class="notes">The paper's single most memorable line. Harness components encode model-limitation assumptions; when models improve, the assumptions go stale and the scaffolding should come off. Removing context resets cut Anthropic's cost 37% with no quality drop.</div>
+  </section>
+
+  <!-- ============ 16. TAKEAWAYS ============ -->
+  <section class="slide" data-title="Takeaways">
+    <p class="kicker">Takeaways · What to do on Monday</p>
+    <h2 class="h2">Treat the harness as an <em>independent engineering surface</em>.</h2>
+
+    <ol class="hanging-list">
+      <li><span class="n">01</span><div><h4>Infrastructure quality, not model size, sets the reliability ceiling</h4><p>The binding constraint is the harness. Budget the work accordingly.</p></div></li>
+      <li><span class="n">02</span><div><h4>Use ETCLOVG to partition and improve harness layers</h4><p>Seven layers; one shared vocabulary across teams and across papers.</p></div></li>
+      <li><span class="n">03</span><div><h4>Observability and Governance deserve dedicated ownership</h4><p>They are not appendices; they are first-class. Staff them that way.</p></div></li>
+      <li><span class="n">04</span><div><h4>Evaluate the model–harness pair; the trace is the primary evidence</h4><p>A leaderboard score is an aggregate of pair behavior, not a property of the model.</p></div></li>
+      <li><span class="n">05</span><div><h4>Simplify as models improve; do not assume <em>more</em> scaffolding is better</h4><p>Adaptive simplification is the durable goal. Re-estimate every harness assumption each upgrade.</p></div></li>
+    </ol>
+
+    <p class="middot-list dim2" style="margin-top:48px;text-align:center"><span>Thanks</span><span>ETCLOVG</span><span>Read the survey for the 170-project appendix</span></p>
+
+    <div class="deck-footer">
+      <span>Takeaways · End</span>
+      <span class="slide-number" data-current="16" data-total="16"></span>
+    </div>
+    <div class="notes">The survey closes by acknowledging its bias toward English-language, GitHub-visible, coding-agent projects. The natural next step is turning ETCLOVG from a descriptive taxonomy into a normative framework that guides harness design rather than only classifying it.</div>
+  </section>
+
+</div>
+<div class="progress-bar"><span></span></div>
+<script src="../html-ppt-skill/assets/runtime.js"></script>
+</body>
+</html>
